@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Se l'utente è un ristoratore
     if (user.ruolo === 'ristoratore') {
-        ['wrapper-indirizzo', 'wrapper-pagamento', 'wrapper-username', 'wrapper-preferenze', 'col-ordini'].forEach(id => {
+        ['wrapper-indirizzo', 'wrapper-pagamento', 'wrapper-preferenze', 'col-ordini'].forEach(id => {
             document.getElementById(id)?.classList.add('d-none');
         });
-        
+        document.getElementById('sezione-campi-cliente')?.classList.add('d-none');
+        document.getElementById('sezione-campi-ristoratore')?.classList.remove('d-none');
+
         const colDati = document.getElementById('col-dati');
         colDati.className = 'col-md-6 mx-auto h-100 d-flex flex-column mb-3 mb-md-0';
 
@@ -34,6 +36,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('profIndirizzo')) document.getElementById('profIndirizzo').value = user.indirizzo || '';
     if (document.getElementById('profPagamento')) document.getElementById('profPagamento').value = user.metodoPagamento || 'carta_credito';
     if (document.getElementById('profPreferenze')) document.getElementById('profPreferenze').value = user.preferenze || '';
+    if (user.ruolo === 'ristoratore') {
+        caricaDatiRistoranteProfilo(user.email);
+    }
 
     // Gestione salvataggio profilo
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
@@ -51,13 +56,34 @@ document.addEventListener('DOMContentLoaded', function() {
         };
 
         try {
-            const res = await fetch('http://localhost:3000/api/profile/update', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datiAggiornati)
-            });
+            const richieste = [
+                fetch('http://localhost:3000/api/profile/update', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datiAggiornati)
+                })
+            ];
 
-            if (res.ok) {
+            if (user.ruolo === 'ristoratore') {
+                const datiRistorante = {
+                    email: user.email,
+                    nomeRistorante: document.getElementById('profNomeRistorante').value,
+                    telefono: document.getElementById('profTelefono').value,
+                    partitaIva: document.getElementById('profPiva').value,
+                    indirizzo: document.getElementById('profSede').value
+                };
+
+                richieste.push(fetch('http://localhost:3000/api/restaurant/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datiRistorante)
+                }));
+            }
+
+            const [resProfilo, resRistorante] = await Promise.all(richieste);
+            const okRistorante = !resRistorante || resRistorante.ok;
+
+            if (resProfilo.ok && okRistorante) {
                 const datiPerLocalStorage = { ...datiAggiornati };
                 delete datiPerLocalStorage.password;
 
@@ -74,6 +100,25 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+async function caricaDatiRistoranteProfilo(email) {
+    try {
+        const res = await fetch(`http://localhost:3000/api/restaurant/profile/${email}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        const nomeRistorante = document.getElementById('profNomeRistorante');
+        const telefono = document.getElementById('profTelefono');
+        const piva = document.getElementById('profPiva');
+        const sede = document.getElementById('profSede');
+
+        if (nomeRistorante) nomeRistorante.value = data.nomeRistorante || '';
+        if (telefono) telefono.value = data.telefono || '';
+        if (piva) piva.value = data.partitaIva || '';
+        if (sede) sede.value = data.indirizzo || '';
+    } catch (err) {
+        console.error(err);
+    }
+}
 
 
 function isLogger() {
