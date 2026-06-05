@@ -112,15 +112,14 @@ function mostraOrdiniCliente(ordini) {
             ? o.piatti[0].ristoranteNome 
             : "Ristorante";
 
-        let extraInfo = "";
-        if (o.stato === 'consegnato') {
-            extraInfo = o.modalita === 'ritiro' 
-                ? '<span class="text-success fw-bold">Ordine Ritirato</span>' 
-                : `<span class="text-success fw-bold">Consegnato a: ${o.luogoConsegna}</span>`;
+        let extraInfo = '';
+        if (o.modalita === 'ritiro') {
+            if (o.stato !== 'consegnato') {
+                const minuti = o.tempoAttesaStimato || 'N/A';
+                extraInfo = `Ritiro stimato in ${minuti} min`;
+            }
         } else {
-            extraInfo = o.modalita === 'ritiro' 
-                ? `Ritiro stimato in <span class="text-danger fw-bold">${o.tempoAttesaStimato || '0'} min</span>` 
-                : `Domicilio: ${o.luogoConsegna}`;
+            extraInfo = `Domicilio: ${o.luogoConsegna}`;
         }
 
         let btnConferma = (o.stato === 'in consegna' && o.modalita === 'domicilio') 

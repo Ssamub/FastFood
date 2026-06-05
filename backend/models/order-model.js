@@ -85,13 +85,25 @@ async function updateOrderStatus(id, nuovoStato) {
     return result.modifiedCount > 0;
 }
 
-async function calcolaTempoAttesa(emailRistorante) {
-    const ordiniInCoda = await coll().countDocuments({
-        ristoranteEmail: emailRistorante,
-        stato: { $in: ['ordinato', 'in preparazione'] },
-        modalita: 'ritiro'
-    });
-    return (ordiniInCoda * 10) + 15;
+function contaPiatti(piatti = []) {
+    return piatti.reduce((totale, p) => totale + (p.quantita || 1), 0);
+}
+
+
+async function calcolaTempoAttesa(emailRistorante, piattiNuovoOrdine = []) {
+    const ordiniInCoda = await coll()
+        .find({
+            ristoranteEmail: emailRistorante,
+            stato: { $in: ['ordinato', 'in preparazione'] },
+            modalita: 'ritiro'
+        })
+        .toArray();
+
+    const piattiInCoda = ordiniInCoda.reduce(
+        (totale, ordine) => totale + contaPiatti(ordine.piatti),
+        0
+    );
+    return (piattiInCoda + contaPiatti(piattiNuovoOrdine)) * 3;
 }
 
 async function getRestaurantStats(email) {
