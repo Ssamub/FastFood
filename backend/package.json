@@ -1,0 +1,17 @@
+{
+  "name": "fastfood",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "author": "Blanc Samuele",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongodb": "^6.15.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "swagger-autogen": "^2.23.7"
+  }
+}

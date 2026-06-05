@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrazione - FastFood</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light min-vh-100 d-flex flex-column">
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm flex-shrink-0">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="index.html">← Torna alla Home</a>
+        </div>
+    </nav>
+
+    <div class="d-flex align-items-center justify-content-center flex-grow-1 px-2 py-2">
+        <div class="bg-white p-4 rounded-3 shadow-sm w-100" style="max-width: 450px;">
+            
+            <div class="text-center mb-4">
+                <h3 class="text-success fw-bold mb-1">FastFood 🍔</h3>
+                <p class="text-muted small mb-0">Registra un nuovo account</p>
+            </div>
+
+            <form id="registerForm">
+                <div class="mb-3">
+                    <select class="form-select border-success bg-success bg-opacity-10 fw-bold py-2" id="regRuoloInput">
+                        <option value="cliente" selected>Cliente</option>
+                        <option value="ristoratore">Ristoratore</option>
+                    </select>
+                </div>
+
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6">
+                        <input type="text" class="form-control p-2" id="regNomeInput" placeholder="Nome" required>
+                    </div>
+                    <div class="col-md-6">
+                        <input type="text" class="form-control p-2" id="regCognomeInput" placeholder="Cognome" required>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <input type="email" class="form-control p-2" id="regEmailInput" placeholder="Indirizzo Email" required>
+                </div>
+                
+                <div class="mb-3">
+                    <input type="password" class="form-control p-2" id="regPasswordInput" placeholder="Password" required>
+                </div>
+
+                <div id="sezione-campi-cliente" class="mb-3 p-3 bg-light rounded border border-light">
+                    <div class="mb-3">
+                        <input type="text" class="form-control p-2" id="regIndirizzoInput" placeholder="Indirizzo Completo di Spedizione">
+                    </div>
+                    <div class="mb-3">
+                        <select class="form-select p-2 text-secondary" id="regPagamentoInput">
+                            <option value="carta_credito" selected>Metodo: Carta di Credito</option>
+                            <option value="prepagata">Metodo: Carta Prepagata</option>
+                        </select>
+                    </div>
+                    <div class="mb-0">
+                        <input type="text" class="form-control p-2" id="regPreferenzeInput" placeholder="Preferenze (es. Dessert, Fritto...)">
+                    </div>
+                </div>
+
+                <div id="sezione-campi-ristoratore" class="mb-3 p-3 bg-light rounded border border-light d-none">
+                    <div class="mb-3">
+                        <input type="text" class="form-control p-2" id="regNomeRistorante" placeholder="Nome del Ristorante">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control p-2" id="regTelefono" placeholder="Numero di Telefono">
+                    </div>
+                    <div class="mb-3">
+                        <input type="text" class="form-control p-2" id="regPiva" placeholder="Partita IVA">
+                    </div>
+                    <div class="mb-0">
+                        <input type="text" class="form-control p-2" id="regSede" placeholder="Indirizzo della Sede Aziendale">
+                    </div>
+                </div>
+
+                <div id="regMessaggio" class="alert d-none small p-2 text-center mb-3"></div>
+                
+                <button type="submit" class="btn btn-success w-100 mb-3 fw-bold py-2" id="btnRegister">Registrati Ora</button>
+                
+                <div class="text-center small">
+                    <p class="mb-0 text-muted">Hai già un account? <a href="login.html" class="text-decoration-none text-success fw-bold">Accedi</a></p>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    
+    <script src="js/register-script.js"></script>
+</body>
+</html>
