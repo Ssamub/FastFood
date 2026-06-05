@@ -251,10 +251,10 @@ function aggiornaContatoreCarrello() {
 }
 
 function mostraConsigliati() {
-    var utente = JSON.parse(localStorage.getItem('utente'));
-    if (!utente || !utente.preferenze) return;
+    var user = JSON.parse(localStorage.getItem('user'));
+    if (!user || !user.preferenze) return;
 
-    var pref = utente.preferenze.toLowerCase().trim();
+    var pref = user.preferenze.toLowerCase().trim();
     var piattiConsigliati = [];
 
     // Ricerca piatti tramite cicli FOR
@@ -300,7 +300,7 @@ function mostraConsigliati() {
         if (area) area.appendChild(container);
     }
 
-    var html = '<h6 class="mb-3 text-dark fw-bold">🌟 Scelti per te (' + utente.preferenze + ')</h6><div class="row">';
+    var html = '<h6 class="mb-3 text-dark fw-bold">🌟 Scelti per te (' + user.preferenze + ')</h6><div class="row">';
     
     var massimoTrePiatti = piattiConsigliati.length > 3 ? 3 : piattiConsigliati.length;
     
