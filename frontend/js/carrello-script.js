@@ -1,4 +1,4 @@
-const utente = JSON.parse(localStorage.getItem('utente'));
+const utente = JSON.parse(localStorage.getItem('user'));
 let carrello = JSON.parse(localStorage.getItem('carrello')) || [];
 
 document.addEventListener('DOMContentLoaded', () => {

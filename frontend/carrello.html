@@ -49,6 +49,20 @@
                                 <input type="text" class="form-control" id="indirizzoConsegna">
                             </div>
                             
+                            <div class="mt-3 mb-4 p-3 bg-light border rounded">
+                                <h6 class="text-primary fw-bold mb-3">Dati di Pagamento 💳</h6>
+                                <div class="mb-2">
+                                    <input type="text" class="form-control form-control-sm" id="numCarta" placeholder="Numero Carta (16 cifre)" pattern="\d{16}" title="Inserisci esattamente 16 numeri" required>
+                                </div>
+                                <div class="row g-2">
+                                    <div class="col-6">
+                                        <input type="text" class="form-control form-control-sm" id="scadCarta" placeholder="Scadenza (MM/AA)" pattern="(0[1-9]|1[0-2])\/[0-9]{2}" title="Inserisci una data valida nel formato MM/AA" required>
+                                    </div>
+                                    <div class="col-6">
+                                        <input type="text" class="form-control form-control-sm" id="cvvCarta" placeholder="CVV (3 cifre)" pattern="\d{3}" title="Inserisci il codice a 3 cifre sul retro" required>
+                                    </div>
+                                </div>
+                            </div>
                             <div class="mt-auto">
                                 <div id="msgCheckout" class="alert d-none small p-2 text-center"></div>
                                 <button type="submit" class="btn btn-primary w-100 fw-bold py-2" id="btnConferma">Conferma Ordine</button>

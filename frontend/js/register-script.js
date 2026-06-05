@@ -25,11 +25,13 @@ function register() {
     const email = document.getElementById('regEmailInput').value.toLowerCase();
     const password = document.getElementById('regPasswordInput').value;
 
+    let username = "";
     let indirizzo = "";
     let metodoPagamento = "";
     let preferenze = "";
 
     if (ruolo === 'cliente') {
+        username = document.getElementById('regUsernameInput').value;
         indirizzo = document.getElementById('regIndirizzoInput').value;
         metodoPagamento = document.getElementById('regPagamentoInput').value;
         preferenze = document.getElementById('regPreferenzeInput').value;
@@ -39,6 +41,7 @@ function register() {
         ruolo: ruolo,
         nome: nome,
         cognome: cognome,
+        username: username,
         email: email,
         password: password,
         indirizzo: indirizzo,

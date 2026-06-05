@@ -29,17 +29,30 @@
 
                     <div class="flex-grow-1 overflow-y-auto pe-2">
                         <form id="profileForm">
-                            <div class="mb-2">
-                                <label class="form-label small text-muted">Nome</label>
-                                <input type="text" id="profNome" class="form-control form-control-sm">
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <label class="form-label small text-muted">Nome</label>
+                                    <input type="text" id="profNome" class="form-control form-control-sm">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small text-muted">Cognome</label>
+                                    <input type="text" id="profCognome" class="form-control form-control-sm">
+                                </div>
                             </div>
-                            <div class="mb-2">
-                                <label class="form-label small text-muted">Cognome</label>
-                                <input type="text" id="profCognome" class="form-control form-control-sm">
+                            
+                            <div class="mb-2" id="wrapper-username">
+                                <label class="form-label small text-muted">Nome Utente</label>
+                                <input type="text" id="profUsername" class="form-control form-control-sm">
                             </div>
+
                             <div class="mb-2">
                                 <label class="form-label small text-muted">Email</label>
                                 <input type="email" id="profEmail" class="form-control form-control-sm bg-light" disabled>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label small text-muted">Nuova Password (lascia vuoto per non cambiare)</label>
+                                <input type="password" id="profPassword" class="form-control form-control-sm" placeholder="******">
                             </div>
                             
                             <div id="sezione-campi-cliente">
@@ -80,7 +93,7 @@
                                 </div>
                             </div>
 
-                            <div class="d-grid gap-2" id="areaAzioniProfilo">
+                            <div class="d-grid gap-2 mt-4" id="areaAzioniProfilo">
                                 <button type="submit" class="btn btn-primary fw-bold">Salva Modifiche</button>
                                 <button type="button" class="btn btn-link text-danger btn-sm text-decoration-none mt-1" onclick="mostraConfermaElimina()">Elimina account</button>
                             </div>

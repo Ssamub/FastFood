@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    // Setup vista se l'utente è un ristoratore
+    // Se l'utente è un ristoratore
     if (user.ruolo === 'ristoratore') {
-        ['wrapper-indirizzo', 'wrapper-pagamento', 'wrapper-preferenze', 'col-ordini'].forEach(id => {
+        ['wrapper-indirizzo', 'wrapper-pagamento', 'wrapper-username', 'wrapper-preferenze', 'col-ordini'].forEach(id => {
             document.getElementById(id)?.classList.add('d-none');
         });
         
@@ -29,10 +29,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Riempio i campi del form
     document.getElementById('profNome').value = user.nome || '';
     document.getElementById('profCognome').value = user.cognome || '';
+    if (document.getElementById('profUsername')) document.getElementById('profUsername').value = user.username || '';
     document.getElementById('profEmail').value = user.email;
     document.getElementById('profIndirizzo').value = user.indirizzo || '';
     document.getElementById('profRuolo').value = user.ruolo;
-    
     if (document.getElementById('profPagamento')) document.getElementById('profPagamento').value = user.metodoPagamento || 'carta_credito';
     if (document.getElementById('profPreferenze')) document.getElementById('profPreferenze').value = user.preferenze || '';
 
@@ -43,9 +43,11 @@ document.addEventListener('DOMContentLoaded', function() {
         msgBox.classList.add('d-none');
         
         const datiAggiornati = {
-            email: user.email,
             nome: document.getElementById('profNome').value,
             cognome: document.getElementById('profCognome').value,
+            username: document.getElementById('profUsername').value,
+            email: user.email,
+            password: document.getElementById('profPassword').value,
             indirizzo: document.getElementById('profIndirizzo').value,
             metodoPagamento: document.getElementById('profPagamento')?.value || '',
             preferenze: document.getElementById('profPreferenze')?.value || ''
@@ -59,10 +61,13 @@ document.addEventListener('DOMContentLoaded', function() {
             });
 
             if (res.ok) {
-                // Fonde i nuovi dati nell'oggetto utente
-                Object.assign(user, datiAggiornati); 
+                const datiPerLocalStorage = { ...datiAggiornati };
+                delete datiPerLocalStorage.password;
+
+                Object.assign(user, datiPerLocalStorage); 
                 localStorage.setItem('user', JSON.stringify(user));
                 
+                document.getElementById('profPassword').value = '';
                 msgBox.textContent = "Profilo aggiornato!";
                 msgBox.className = "alert alert-success small mt-3";
             } else {
