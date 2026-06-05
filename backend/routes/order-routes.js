@@ -16,7 +16,7 @@ router.post('/orders', async (req, res) => {
 
         let tempoAttesaStimato = null;
         if (modalita === 'ritiro') {
-            tempoAttesaStimato = await calcolaTempoAttesa(ristoranteEmail);
+            tempoAttesaStimato = await calcolaTempoAttesa(ristoranteEmail, piatti);
         }
 
         const ordine = await createOrder({

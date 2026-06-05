@@ -251,7 +251,7 @@ function aggiornaContatoreCarrello() {
 }
 
 function mostraConsigliati() {
-    var utente = JSON.parse(localStorage.getItem('utente'));
+    var utente = JSON.parse(localStorage.getItem('user'));
     if (!utente || !utente.preferenze) return;
 
     var pref = utente.preferenze.toLowerCase().trim();

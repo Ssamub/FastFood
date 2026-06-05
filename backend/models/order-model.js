@@ -10,7 +10,50 @@ async function createOrder(data) {
 }
 
 async function getOrdersByClient(email) {
-    return coll().find({ clienteEmail: email }).sort({ createdAt: -1 }).toArray();
+    const ordini = await coll().find({ clienteEmail: email }).sort({ createdAt: -1 }).toArray();
+    const ristorantiRitiro = [...new Set(
+        ordini
+            .filter(o => o.modalita === 'ritiro')
+            .map(o => o.ristoranteEmail)
+    )];
+
+    if (ristorantiRitiro.length === 0) {
+        return ordini;
+    }
+
+    const tempiPerOrdine = new Map();
+    for (const ristoranteEmail of ristorantiRitiro) {
+        const coda = await coll()
+            .find({
+                ristoranteEmail,
+                stato: { $in: ['ordinato', 'in preparazione'] },
+                modalita: 'ritiro'
+            })
+            .sort({ createdAt: 1 })
+            .toArray();
+
+        let piattiInCoda = 0;
+        for (const ordine of coda) {
+            piattiInCoda += contaPiatti(ordine.piatti);
+            tempiPerOrdine.set(String(ordine._id), piattiInCoda * 3);
+        }
+    }
+
+    ordini.forEach(o => {
+        if (o.modalita !== 'ritiro') return;
+        const tempoStimato = tempiPerOrdine.get(String(o._id));
+        if (tempoStimato !== undefined) {
+            o.tempoAttesaStimato = tempoStimato;
+            return;
+        }
+        if (o.stato === 'consegnato') {
+            o.tempoAttesaStimato = 0;
+            return;
+        }
+        o.tempoAttesaStimato = contaPiatti(o.piatti) * 3;
+    });
+
+    return ordini;
 }
 
 async function getOrdersByRestaurant(email) {
@@ -25,13 +68,28 @@ async function updateOrderStatus(id, nuovoStato) {
     return result.modifiedCount > 0;
 }
 
-async function calcolaTempoAttesa(emailRistorante) {
-    const ordiniInCoda = await coll().countDocuments({
-        ristoranteEmail: emailRistorante,
-        stato: { $in: ['ordinato', 'in preparazione'] },
-        modalita: 'ritiro'
-    });
-    return (ordiniInCoda * 10) + 15;
+function contaPiatti(piatti = []) {
+    return piatti.reduce((totale, p) => totale + (p.quantita || 1), 0);
+}
+
+async function calcolaTempoAttesa(emailRistorante, piattiNuovoOrdine = []) {
+    const email = typeof emailRistorante === 'string' ? emailRistorante : '';
+    if (!email) {
+        return contaPiatti(piattiNuovoOrdine) * 3;
+    }
+    const ordiniInCoda = await coll()
+        .find({
+            ristoranteEmail: email,
+            stato: { $in: ['ordinato', 'in preparazione'] },
+            modalita: 'ritiro'
+        })
+        .toArray();
+
+    const piattiInCoda = ordiniInCoda.reduce(
+        (totale, ordine) => totale + contaPiatti(ordine.piatti),
+        0
+    );
+    return (piattiInCoda + contaPiatti(piattiNuovoOrdine)) * 3;
 }
 
 async function getRestaurantStats(email) {

@@ -229,6 +229,6 @@ async function caricaStatistiche() {
 }
 
 function logout() {
-    localStorage.removeItem('utente');
+    localStorage.removeItem('user');
     window.location.href = 'index.html';
 }

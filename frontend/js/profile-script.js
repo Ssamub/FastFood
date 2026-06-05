@@ -120,9 +120,16 @@ function mostraOrdiniCliente(ordini) {
         const piatti = o.piatti.map(p => `${p.nome} (x${p.quantita})`).join(', ');
         const badge = o.stato === 'consegnato' ? 'success' : (o.stato === 'in consegna' ? 'info' : 'warning');
         
-        let extraInfo = o.modalita === 'ritiro' 
-            ? `Ritiro stimato in ${o.tempoAttesaStimato || '?'} min` 
-            : `Domicilio: ${o.luogoConsegna}`;
+        let extraInfo = '';
+        if (o.modalita === 'ritiro') {
+            if (o.stato !== 'consegnato') {
+                const minuti = typeof o.tempoAttesaStimato === 'number' ? o.tempoAttesaStimato : '?';
+                extraInfo = `Ritiro stimato in ${minuti} min`;
+            }
+        } else {
+            extraInfo = `Domicilio: ${o.luogoConsegna}`;
+        }
+        const infoSuffix = extraInfo ? ` - ${extraInfo}` : '';
 
         let btnConferma = (o.stato === 'in consegna' && o.modalita === 'domicilio') 
             ? `<button class="btn btn-sm btn-success mt-3 w-100 fw-bold" onclick="confermaRicezioneOrdine('${o._id}')">Segnala come Ricevuto ✅</button>` 
@@ -136,7 +143,7 @@ function mostraOrdiniCliente(ordini) {
                         <span class="badge bg-${badge} text-dark">${o.stato.toUpperCase()}</span>
                     </div>
                     <p class="mb-1 small"><strong>Piatti:</strong> ${piatti}</p>
-                    <p class="mb-1 small"><strong>Totale:</strong> €${o.totale.toFixed(2)} - ${extraInfo}</p>
+                    <p class="mb-1 small"><strong>Totale:</strong> €${o.totale.toFixed(2)}${infoSuffix}</p>
                     ${btnConferma}
                 </div>
             </div>`;
