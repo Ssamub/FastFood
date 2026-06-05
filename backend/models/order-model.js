@@ -73,9 +73,13 @@ function contaPiatti(piatti = []) {
 }
 
 async function calcolaTempoAttesa(emailRistorante, piattiNuovoOrdine = []) {
+    const email = typeof emailRistorante === 'string' ? emailRistorante : '';
+    if (!email) {
+        return contaPiatti(piattiNuovoOrdine) * 3;
+    }
     const ordiniInCoda = await coll()
         .find({
-            ristoranteEmail: emailRistorante,
+            ristoranteEmail: email,
             stato: { $in: ['ordinato', 'in preparazione'] },
             modalita: 'ritiro'
         })
