@@ -39,6 +39,9 @@ function impostaInterfacciaUtente() {
 
 
 async function caricaDatiProfilo() {
+    document.getElementById('profNome').value = user.nome || '';
+    document.getElementById('profCognome').value = user.cognome || '';
+
     if (user.ruolo === 'ristoratore') {
        try {
             const res = await fetch(`http://localhost:3000/api/restaurant/profile/${user.email}`);
@@ -54,8 +57,6 @@ async function caricaDatiProfilo() {
         }
 
     } else { // user.ruolo === 'cliente'
-        document.getElementById('profNome').value = user.nome || '';
-        document.getElementById('profCognome').value = user.cognome || '';
         document.getElementById('profUsername').value = user.username || '';
         document.getElementById('profIndirizzo').value = user.indirizzo || '';
         document.getElementById('profPagamento').value = user.metodoPagamento || 'carta_credito';
@@ -71,47 +72,51 @@ async function caricaDatiProfilo() {
 async function gestisciSalvataggioProfilo(e) {
     e.preventDefault();
 
-    let datiAggiornati = {}
-    let endpoint = '';
+    const datiAnagrafici = {
+        nome: document.getElementById('profNome').value,
+        cognome: document.getElementById('profCognome').value,
+        email: user.email,
+        password: document.getElementById('profPassword')?.value || ''
+    };
 
-    if (user.ruolo === 'ristoratore') {
-        datiAggiornati = {
-            nome: document.getElementById('profNome').value,
-            cognome: document.getElementById('profCognome').value,
-            password: document.getElementById('profPassword')?.value || '',
-            nomeRistorante: document.getElementById('profNomeRistorante').value,
-            telefono: document.getElementById('profTelefono').value,
-            partitaIva: document.getElementById('profPiva').value,
-            indirizzo: document.getElementById('profSede').value
-        };
-        endpoint = 'http://localhost:3000/api/restaurant/profile';
-    } else {
-        datiAggiornati = {
-            nome: document.getElementById('profNome').value,
-            cognome: document.getElementById('profCognome').value,
-            username: document.getElementById('profUsername').value,
-            password: document.getElementById('profPassword')?.value || '',
-            indirizzo: document.getElementById('profIndirizzo').value,
-            metodoPagamento: document.getElementById('profPagamento').value,
-            preferenze: document.getElementById('profPreferenze').value
-        };
-        endpoint = 'http://localhost:3000/api/profile/update';
+    if (user.ruolo === 'cliente') { // Campi specifici per cliente
+        datiAnagrafici.username = document.getElementById('profUsername').value;
+        datiAnagrafici.indirizzo = document.getElementById('profIndirizzo').value;
+        datiAnagrafici.metodoPagamento = document.getElementById('profPagamento').value;
+        datiAnagrafici.preferenze = document.getElementById('profPreferenze').value;
     }
 
     try {
-        const res = await fetch(endpoint, {
+        const resUser = await fetch('http://localhost:3000/api/profile/update', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datiAggiornati)
+            body: JSON.stringify(datiAnagrafici)
         });
 
-        if (res.ok) {
-            const datiPerLocalStorage = { ...datiAggiornati };
+        if (user.ruolo === 'ristoratore') {
+            const datiRistorante = {
+                email: user.email,
+                nomeRistorante: document.getElementById('profNomeRistorante').value,
+                telefono: document.getElementById('profTelefono').value,
+                partitaIva: document.getElementById('profPiva').value,
+                indirizzo: document.getElementById('profSede').value
+            };
+
+            const resRest = await fetch('http://localhost:3000/api/restaurant/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datiRistorante)
+            });
+        }
+
+        if (resUser.ok && resRest.ok) {
+            const datiPerLocalStorage = { ...user, ...datiAnagrafici };
             delete datiPerLocalStorage.password;
 
             localStorage.setItem('user', JSON.stringify(datiPerLocalStorage));
                 
             document.getElementById('profPassword').value = '';
+            
             alert("Profilo aggiornato con successo!");
         } else {
             alert("Errore durante l'aggiornamento del profilo.");

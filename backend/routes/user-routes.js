@@ -92,21 +92,22 @@ router.put('/profile/update', async (req, res) => {
     const lowerEmail = email.toLowerCase();
 
     try {
-        const updateData = { 
+        const datiAggiornati = { 
             nome: nome, 
             cognome: cognome, 
-            username: username,
-            indirizzo: indirizzo, 
-            metodoPagamento: metodoPagamento, 
-            preferenze: preferenze 
         };
+
+        if (username) datiAggiornati.username = username;
+        if (indirizzo) datiAggiornati.indirizzo = indirizzo;
+        if (metodoPagamento) datiAggiornati.metodoPagamento = metodoPagamento;
+        if (preferenze) datiAggiornati.preferenze = preferenze;
 
         if (password) {
             if (password.length < 6) return res.status(400).json({ error: "Password troppo corta" });
-            updateData.password = await bcrypt.hash(password, 10);
+            datiAggiornati.password = await bcrypt.hash(password, 10);
         }
         
-        const result = await updateUser(lowerEmail, updateData);
+        const result = await updateUser(lowerEmail, datiAggiornati);
 
         if (result.matchedCount > 0) {
             res.json({ message: "Profilo aggiornato" });
@@ -114,6 +115,7 @@ router.put('/profile/update', async (req, res) => {
             res.status(404).json({ error: "Utente non trovato" });
         }
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: "Errore del server" });
     }
 });
