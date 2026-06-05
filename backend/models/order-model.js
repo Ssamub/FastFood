@@ -17,27 +17,6 @@ async function getOrdersByRestaurant(email) {
     return coll().find({ ristoranteEmail: email }).sort({ createdAt: 1 }).toArray();
 }
 
-async function calcolaTempoAttesa(emailRistorante, nuoviPiatti = []) {
-    const ordiniInCoda = await coll().find({
-        ristoranteEmail: emailRistorante,
-        stato: { $in: ['ordinato', 'in preparazione'] }
-    }).toArray();
-
-    let totalePiatti = 0;
-    
-    ordiniInCoda.forEach(ordine => {
-        ordine.piatti.forEach(piatto => {
-            totalePiatti += piatto.quantita;
-        });
-    });
-
-    nuoviPiatti.forEach(piatto => {
-        totalePiatti += piatto.quantita;
-    });
-
-    return totalePiatti * 3;
-}
-
 async function updateOrderStatus(id, nuovoStato) {
     const ordine = await coll().findOne({ _id: new ObjectId(id) });
     if (!ordine) return false;
@@ -75,14 +54,6 @@ async function updateOrderStatus(id, nuovoStato) {
         return true;
     }
     return false;
-}
-
-async function updateOrderStatus(id, nuovoStato) {
-    const result = await coll().updateOne(
-        { _id: new ObjectId(id) },
-        { $set: { stato: nuovoStato } }
-    );
-    return result.modifiedCount > 0;
 }
 
 function contaPiatti(piatti = []) {
