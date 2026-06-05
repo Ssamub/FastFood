@@ -67,11 +67,12 @@ router.post('/login', async (req, res) => {
 
         if (user.ruolo === ruolo && passwordMatch) {
             res.json({
-                message: "Login riuscito",
+                message: "Login effettuato",
                 user: {
                     ruolo: user.ruolo,
                     nome: user.nome,
                     cognome: user.cognome,
+                    username: user.username,
                     email: user.email,
                     indirizzo: user.indirizzo,
                     metodoPagamento: user.metodoPagamento,

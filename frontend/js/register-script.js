@@ -10,9 +10,11 @@ document.addEventListener('DOMContentLoaded', () => {
         
         if (e.target.value === 'ristoratore') {
             sezioneCliente.classList.add('d-none');
+            document.getElementById('regUsernameInput').classList.add('d-none');
             sezioneRistoratore.classList.remove('d-none');
         } else {
             sezioneCliente.classList.remove('d-none');
+            document.getElementById('regUsernameInput').classList.remove('d-none');
             sezioneRistoratore.classList.add('d-none');
         }
     });

@@ -17,6 +17,66 @@ async function getOrdersByRestaurant(email) {
     return coll().find({ ristoranteEmail: email }).sort({ createdAt: 1 }).toArray();
 }
 
+async function calcolaTempoAttesa(emailRistorante, nuoviPiatti = []) {
+    const ordiniInCoda = await coll().find({
+        ristoranteEmail: emailRistorante,
+        stato: { $in: ['ordinato', 'in preparazione'] }
+    }).toArray();
+
+    let totalePiatti = 0;
+    
+    ordiniInCoda.forEach(ordine => {
+        ordine.piatti.forEach(piatto => {
+            totalePiatti += piatto.quantita;
+        });
+    });
+
+    nuoviPiatti.forEach(piatto => {
+        totalePiatti += piatto.quantita;
+    });
+
+    return totalePiatti * 3;
+}
+
+async function updateOrderStatus(id, nuovoStato) {
+    const ordine = await coll().findOne({ _id: new ObjectId(id) });
+    if (!ordine) return false;
+
+    const statiCucina = ['ordinato', 'in preparazione'];
+    const statiFiniti = ['in consegna', 'consegnato'];
+
+    const result = await coll().updateOne(
+        { _id: new ObjectId(id) },
+        { $set: { stato: nuovoStato } }
+    );
+
+    if (result.modifiedCount > 0) {
+        if (statiCucina.includes(ordine.stato) && statiFiniti.includes(nuovoStato)) {
+            let piattiCompletati = 0;
+            ordine.piatti.forEach(p => piattiCompletati += p.quantita);
+            let minutiDaScalare = piattiCompletati * 3;
+
+            const ordiniDaAggiornare = await coll().find({
+                ristoranteEmail: ordine.ristoranteEmail,
+                stato: { $in: ['ordinato', 'in preparazione'] },
+                modalita: 'ritiro'
+            }).toArray();
+
+            for (const o of ordiniDaAggiornare) {
+                let nuovoTempo = (o.tempoAttesaStimato || 0) - minutiDaScalare;
+                if (nuovoTempo < 0) nuovoTempo = 0; // Evitiamo che il tempo diventi negativo!
+                
+                await coll().updateOne(
+                    { _id: o._id },
+                    { $set: { tempoAttesaStimato: nuovoTempo } }
+                );
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
 async function updateOrderStatus(id, nuovoStato) {
     const result = await coll().updateOne(
         { _id: new ObjectId(id) },

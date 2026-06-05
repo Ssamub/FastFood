@@ -23,91 +23,84 @@
             
             <div id="col-dati" class="col-md-4 h-100 d-flex flex-column mb-3 mb-md-0">
                 <div class="bg-white p-4 rounded-3 shadow-sm d-flex flex-column h-100 position-relative">
-                    <h4 class="text-primary fw-bold mb-3 border-bottom pb-2">I Miei Dati</h4>
+                    <h4 class="text-primary fw-bold mb-3 border-bottom pb-2" id="displayEmail">I Miei Dati</h4>
                     
                     <div id="profMessaggio" class="alert d-none small text-center position-absolute top-0 end-0 m-3 shadow-sm" style="z-index: 100; max-width: 55%;"></div>
 
-                    <div class="flex-grow-1 overflow-y-auto pe-2">
-                        <form id="profileForm">
-                            <div class="row g-2 mb-2">
+                    <div class="flex-grow-1 d-flex flex-column overflow-hidden">
+                        <form id="profileForm" class="d-flex flex-column h-100">
+                                          
+                            <div class="row g-3 mb-3">
                                 <div class="col-6">
-                                    <label class="form-label small text-muted">Nome</label>
-                                    <input type="text" id="profNome" class="form-control form-control-sm">
+                                    <label class="form-label small text-muted mb-0">Nome</label>
+                                    <input type="text" id="profNome" class="form-control">
                                 </div>
                                 <div class="col-6">
-                                    <label class="form-label small text-muted">Cognome</label>
-                                    <input type="text" id="profCognome" class="form-control form-control-sm">
+                                    <label class="form-label small text-muted mb-0">Cognome</label>
+                                    <input type="text" id="profCognome" class="form-control">
                                 </div>
                             </div>
                             
-                            <div class="mb-2" id="wrapper-username">
-                                <label class="form-label small text-muted">Nome Utente</label>
-                                <input type="text" id="profUsername" class="form-control form-control-sm">
-                            </div>
-
-                            <div class="mb-2">
-                                <label class="form-label small text-muted">Email</label>
-                                <input type="email" id="profEmail" class="form-control form-control-sm bg-light" disabled>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label small text-muted">Nuova Password (lascia vuoto per non cambiare)</label>
-                                <input type="password" id="profPassword" class="form-control form-control-sm" placeholder="******">
+                            <div class="row g-3 mb-3">
+                                <div class="col-6" id="wrapper-username">
+                                    <label class="form-label small text-muted mb-0">Nome Utente</label>
+                                    <input type="text" id="profUsername" class="form-control">
+                                </div>
+                                <div class="col-6">
+                                    <label class="form-label small text-muted mb-0">Nuova Password</label>
+                                    <input type="password" id="profPassword" class="form-control" placeholder="Vuoto per non cambiare">
+                                </div>
                             </div>
                             
                             <div id="sezione-campi-cliente">
-                                <div class="mb-2" id="wrapper-indirizzo">
-                                    <label class="form-label small text-muted">Indirizzo di spedizione</label>
-                                    <input type="text" id="profIndirizzo" class="form-control form-control-sm">
+                                <div class="mb-3" id="wrapper-indirizzo">
+                                    <label class="form-label small text-muted mb-0">Indirizzo di spedizione</label>
+                                    <input type="text" id="profIndirizzo" class="form-control">
                                 </div>
-                                <div class="mb-2" id="wrapper-pagamento">
-                                    <label class="form-label small text-muted">Metodo di Pagamento</label>
-                                    <select class="form-select form-select-sm" id="profPagamento">
-                                        <option value="carta_credito">Carta di Credito</option>
-                                        <option value="prepagata">Carta Prepagata</option>
-                                    </select>
-                                </div>
-                                <div class="mb-2" id="wrapper-preferenze">
-                                    <label class="form-label small text-muted">Preferenze</label>
-                                    <input type="text" id="profPreferenze" class="form-control form-control-sm">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6" id="wrapper-pagamento">
+                                        <label class="form-label small text-muted mb-0">Pagamento</label>
+                                        <select class="form-select" id="profPagamento">
+                                            <option value="carta_credito">Carta di Credito</option>
+                                            <option value="prepagata">Carta Prepagata</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6" id="wrapper-preferenze">
+                                        <label class="form-label small text-muted mb-0">Preferenze</label>
+                                        <input type="text" id="profPreferenze" class="form-control" placeholder="Es. Fritto, Dolce...">
+                                    </div>
                                 </div>
                             </div>
 
                             <div id="sezione-campi-ristoratore" class="d-none">
-                                <h5 class="text-primary fw-bold mb-3 border-bottom pb-2 mt-4">Dati Aziendali</h5>
-                                <div class="mb-2">
-                                    <label class="form-label small text-muted">Nome Ristorante</label>
-                                    <input type="text" id="profNomeRistorante" class="form-control form-control-sm">
+                                <h6 class="text-primary fw-bold border-bottom pb-2 mb-3 mt-2">Dati Aziendali</h6>
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted mb-0">Nome Ristorante</label>
+                                    <input type="text" id="profNomeRistorante" class="form-control">
                                 </div>
-                                <div class="mb-2">
-                                    <label class="form-label small text-muted">Telefono</label>
-                                    <input type="text" id="profTelefono" class="form-control form-control-sm">
+                                <div class="row g-3 mb-3">
+                                    <div class="col-6">
+                                        <label class="form-label small text-muted mb-0">Telefono</label>
+                                        <input type="text" id="profTelefono" class="form-control">
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label small text-muted mb-0">Partita IVA</label>
+                                        <input type="text" id="profPiva" class="form-control">
+                                    </div>
                                 </div>
-                                <div class="mb-2">
-                                    <label class="form-label small text-muted">Partita IVA</label>
-                                    <input type="text" id="profPiva" class="form-control form-control-sm">
-                                </div>
-                                <div class="mb-2">
-                                    <label class="form-label small text-muted">Indirizzo Sede Aziendale</label>
-                                    <input type="text" id="profSede" class="form-control form-control-sm">
+                                <div class="mb-3">
+                                    <label class="form-label small text-muted mb-0">Sede Aziendale</label>
+                                    <input type="text" id="profSede" class="form-control">
                                 </div>
                             </div>
 
-                            <div class="d-grid gap-2 mt-4" id="areaAzioniProfilo">
-                                <button type="submit" class="btn btn-primary fw-bold">Salva Modifiche</button>
-                                <button type="button" class="btn btn-link text-danger btn-sm text-decoration-none mt-1" onclick="mostraConfermaElimina()">Elimina account</button>
+                            <div class="mt-auto pt-3 border-top">
+                                <button type="submit" class="btn btn-primary w-100 fw-bold mb-2 py-2">Salva Modifiche</button>
+                                <div class="text-center">
+                                    <button type="button" class="btn btn-link text-danger btn-sm text-decoration-none p-0" onclick="eliminaAccount()">Elimina account</button>
+                                </div>
                             </div>
                         </form>
-                    </div>
-
-                    <div id="areaConfermaElimina" class="d-none position-absolute top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex justify-content-center align-items-center p-4 rounded-3" style="z-index: 20;">
-                        <div class="bg-white p-4 rounded-3 shadow border border-danger text-center w-100">
-                            <p class="text-danger mb-3 fw-bold">Sei sicuro di voler eliminare il profilo?</p>
-                            <div class="d-flex gap-2">
-                                <button type="button" class="btn btn-danger btn-sm w-100 fw-bold" onclick="confermaEliminazioneDefinitiva()">Sì, elimina</button>
-                                <button type="button" class="btn btn-light btn-sm w-100 border fw-bold" onclick="annullaEliminazione()">Annulla</button>
-                            </div>
-                        </div>
                     </div>
 
                 </div>

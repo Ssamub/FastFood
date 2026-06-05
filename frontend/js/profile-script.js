@@ -26,21 +26,18 @@ document.addEventListener('DOMContentLoaded', function() {
         caricaOrdiniCliente(user.email);
     }
 
-    // Riempio i campi del form
-    document.getElementById('profNome').value = user.nome || '';
-    document.getElementById('profCognome').value = user.cognome || '';
+    document.getElementById('displayEmail').textContent = user.email ? `I miei dati: (${user.email})` : '';
+
+    if (document.getElementById('profNome')) document.getElementById('profNome').value = user.nome || '';
+    if (document.getElementById('profCognome')) document.getElementById('profCognome').value = user.cognome || '';
     if (document.getElementById('profUsername')) document.getElementById('profUsername').value = user.username || '';
-    document.getElementById('profEmail').value = user.email;
-    document.getElementById('profIndirizzo').value = user.indirizzo || '';
-    document.getElementById('profRuolo').value = user.ruolo;
+    if (document.getElementById('profIndirizzo')) document.getElementById('profIndirizzo').value = user.indirizzo || '';
     if (document.getElementById('profPagamento')) document.getElementById('profPagamento').value = user.metodoPagamento || 'carta_credito';
     if (document.getElementById('profPreferenze')) document.getElementById('profPreferenze').value = user.preferenze || '';
 
     // Gestione salvataggio profilo
     document.getElementById('profileForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const msgBox = document.getElementById('profMessaggio');
-        msgBox.classList.add('d-none');
         
         const datiAggiornati = {
             nome: document.getElementById('profNome').value,
@@ -68,17 +65,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 localStorage.setItem('user', JSON.stringify(user));
                 
                 document.getElementById('profPassword').value = '';
-                msgBox.textContent = "Profilo aggiornato!";
-                msgBox.className = "alert alert-success small mt-3";
+                alert("Profilo aggiornato con successo!");
             } else {
-                msgBox.textContent = "Errore durante il salvataggio.";
-                msgBox.className = "alert alert-danger small mt-3";
+                alert("Errore durante l'aggiornamento del profilo.");
             }
         } catch (err) {
-            msgBox.textContent = "Errore di connessione.";
-            msgBox.className = "alert alert-danger small mt-3";
+            alert("Errore di connessione al server.");
         }
-        msgBox.classList.remove('d-none');
     });
 });
 
@@ -91,11 +84,6 @@ function isLogger() {
         popola_scheda(user);
     }
 }
-
-
-
-
-
 
 
 async function caricaOrdiniCliente(email) {
@@ -120,27 +108,40 @@ function mostraOrdiniCliente(ordini) {
         const piatti = o.piatti.map(p => `${p.nome} (x${p.quantita})`).join(', ');
         const badge = o.stato === 'consegnato' ? 'success' : (o.stato === 'in consegna' ? 'info' : 'warning');
         
-        let extraInfo = o.modalita === 'ritiro' 
-            ? `Ritiro stimato in ${o.tempoAttesaStimato || '?'} min` 
-            : `Domicilio: ${o.luogoConsegna}`;
+        const nomeRistorante = o.piatti && o.piatti.length > 0 && o.piatti[0].ristoranteNome 
+            ? o.piatti[0].ristoranteNome 
+            : "Ristorante";
+
+        let extraInfo = "";
+        if (o.stato === 'consegnato') {
+            extraInfo = o.modalita === 'ritiro' 
+                ? '<span class="text-success fw-bold">Ordine Ritirato</span>' 
+                : `<span class="text-success fw-bold">Consegnato a: ${o.luogoConsegna}</span>`;
+        } else {
+            extraInfo = o.modalita === 'ritiro' 
+                ? `Ritiro stimato in <span class="text-danger fw-bold">${o.tempoAttesaStimato || '0'} min</span>` 
+                : `Domicilio: ${o.luogoConsegna}`;
+        }
 
         let btnConferma = (o.stato === 'in consegna' && o.modalita === 'domicilio') 
-            ? `<button class="btn btn-sm btn-success mt-3 w-100 fw-bold" onclick="confermaRicezioneOrdine('${o._id}')">Segnala come Ricevuto ✅</button>` 
+            ? `<button class="btn btn-sm btn-success mt-3 w-100 fw-bold" onclick="confermaRicezioneOrdine('${o._id}')">Segnala come Ricevuto</button>` 
             : '';
 
         return `
             <div class="card mb-3 shadow-sm border-start border-4 border-${badge}">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between mb-2">
+                    <div class="d-flex justify-content-between mb-1">
                         <h6 class="fw-bold mb-0">Ordine #${o._id.slice(-6)}</h6>
                         <span class="badge bg-${badge} text-dark">${o.stato.toUpperCase()}</span>
                     </div>
+                    <div class="text-primary fw-bold small mb-2">Da: ${nomeRistorante}</div>
+                    
                     <p class="mb-1 small"><strong>Piatti:</strong> ${piatti}</p>
                     <p class="mb-1 small"><strong>Totale:</strong> €${o.totale.toFixed(2)} - ${extraInfo}</p>
                     ${btnConferma}
                 </div>
             </div>`;
-    }).join('');
+        }).join('');
 }
 
 async function confermaRicezioneOrdine(idOrdine) {
@@ -156,33 +157,27 @@ async function confermaRicezioneOrdine(idOrdine) {
     }
 }
 
-function mostraConfermaElimina() { document.getElementById('areaConfermaElimina').classList.remove('d-none'); }
-function annullaEliminazione() { document.getElementById('areaConfermaElimina').classList.add('d-none'); }
+async function eliminaAccount() {
+    const conferma = confirm("Sei sicuro di voler eliminare definitivamente il tuo account? Questa azione è irreversibile.");
+    
+    if (conferma) {
+        try {
+            const res = await fetch('http://localhost:3000/api/profile/delete', {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: user.email })
+            });
 
-async function confermaEliminazioneDefinitiva() {
-    const msgBox = document.getElementById('profMessaggio');
-    try {
-        const res = await fetch('http://localhost:3000/api/profile/delete', {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: user.email })
-        });
-
-        if (res.ok) {
-            annullaEliminazione();
-            msgBox.textContent = "Account rimosso. Arrivederci!";
-            msgBox.className = "alert alert-warning small mt-3";
-            msgBox.classList.remove('d-none');
-            setTimeout(logout, 1500);
-        } else {
-            msgBox.textContent = "Errore eliminazione.";
-            msgBox.className = "alert alert-danger small mt-3";
-            msgBox.classList.remove('d-none');
+            if (res.ok) {
+                alert("Account eliminato con successo. Arrivederci!");
+                localStorage.removeItem('user');
+                window.location.href = "index.html"; // Riporta alla home
+            } else {
+                alert("Errore durante l'eliminazione dell'account.");
+            }
+        } catch (err) {
+            alert("Errore di rete. Impossibile eliminare l'account ora.");
         }
-    } catch (err) {
-        msgBox.textContent = "Errore di rete.";
-        msgBox.className = "alert alert-danger small mt-3";
-        msgBox.classList.remove('d-none');
     }
 }
 
