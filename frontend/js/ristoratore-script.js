@@ -17,10 +17,6 @@ async function caricaDatiRistorante() {
         const res = await fetch(`http://localhost:3000/api/restaurant/profile/${utente.email}`);
         if (res.ok) {
             const data = await res.json();
-            document.getElementById('restNome').value = data.nomeRistorante || '';
-            document.getElementById('restTelefono').value = data.telefono || '';
-            document.getElementById('restPiva').value = data.partitaIva || '';
-            document.getElementById('restIndirizzo').value = data.indirizzo || '';
             mostraMenu(data.menu || []);
         }
     } catch (err) {
@@ -63,35 +59,6 @@ document.getElementById('selectPiattoComune').addEventListener('change', (e) => 
     }
 });
 
-document.getElementById('formRistorante').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const data = {
-        email: utente.email,
-        nomeRistorante: document.getElementById('restNome').value,
-        telefono: document.getElementById('restTelefono').value,
-        partitaIva: document.getElementById('restPiva').value,
-        indirizzo: document.getElementById('restIndirizzo').value
-    };
-
-    try {
-        const res = await fetch('http://localhost:3000/api/restaurant/profile', {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        const msg = document.getElementById('msgRistorante');
-        msg.classList.remove('d-none');
-        if (res.ok) {
-            msg.className = 'alert alert-success mt-3 small';
-            msg.textContent = 'Dati ristorante salvati';
-        } else {
-            msg.className = 'alert alert-danger mt-3 small';
-            msg.textContent = 'Errore salvataggio';
-        }
-    } catch (err) {
-        console.error(err);
-    }
-});
 
 document.getElementById('formMenu').addEventListener('submit', async (e) => {
     e.preventDefault();

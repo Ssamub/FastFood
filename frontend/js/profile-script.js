@@ -1,90 +1,129 @@
 const user = JSON.parse(localStorage.getItem('user'));
 
-document.addEventListener('DOMContentLoaded', function() {
-    
-    // Controllo sicurezza immediato
+document.addEventListener('DOMContentLoaded', async () => {
+
     if (!user) {
-        window.location.href = "login.html";
+        window.location.href = "login.html"; // Se non c'è un utente loggato, reindirizzo al login
         return;
     }
 
-    // Se l'utente è un ristoratore
+    document.getElementById('displayEmail').textContent = `I miei dati: (${user.email})`; // Mostro l'email
+
+    impostaInterfacciaUtente();
+    await caricaDatiProfilo();
+    
+    document.getElementById('profileForm').addEventListener('submit', gestisciSalvataggioProfilo);
+});
+
+
+function impostaInterfacciaUtente() {
     if (user.ruolo === 'ristoratore') {
         ['wrapper-indirizzo', 'wrapper-pagamento', 'wrapper-username', 'wrapper-preferenze', 'col-ordini'].forEach(id => {
             document.getElementById(id)?.classList.add('d-none');
         });
+
+        document.getElementById('sezione-campi-cliente').classList.add('d-none');
+        document.getElementById('sezione-campi-ristoratore').classList.remove('d-none');
         
-        const colDati = document.getElementById('col-dati');
-        colDati.className = 'col-md-6 mx-auto h-100 d-flex flex-column mb-3 mb-md-0';
+        document.getElementById('col-dati').className = 'col-md-6 mx-auto h-100 d-flex flex-column mb-3 mb-md-0';
 
         const tastoTorna = document.getElementById('link-torna-profilo');
-        if (tastoTorna) {
-            tastoTorna.href = "ristoratore.html";
-            tastoTorna.textContent = "← Torna alla Gestione";
-        }
-    } else {
-        caricaOrdiniCliente(user.email);
-    }
+        tastoTorna.href = "ristoratore.html";
+        tastoTorna.textContent = "← Torna alla Gestione";
 
-    document.getElementById('displayEmail').textContent = user.email ? `I miei dati: (${user.email})` : '';
-
-    if (document.getElementById('profNome')) document.getElementById('profNome').value = user.nome || '';
-    if (document.getElementById('profCognome')) document.getElementById('profCognome').value = user.cognome || '';
-    if (document.getElementById('profUsername')) document.getElementById('profUsername').value = user.username || '';
-    if (document.getElementById('profIndirizzo')) document.getElementById('profIndirizzo').value = user.indirizzo || '';
-    if (document.getElementById('profPagamento')) document.getElementById('profPagamento').value = user.metodoPagamento || 'carta_credito';
-    if (document.getElementById('profPreferenze')) document.getElementById('profPreferenze').value = user.preferenze || '';
-
-    // Gestione salvataggio profilo
-    document.getElementById('profileForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        const datiAggiornati = {
-            nome: document.getElementById('profNome').value,
-            cognome: document.getElementById('profCognome').value,
-            username: document.getElementById('profUsername').value,
-            email: user.email,
-            password: document.getElementById('profPassword').value,
-            indirizzo: document.getElementById('profIndirizzo').value,
-            metodoPagamento: document.getElementById('profPagamento')?.value || '',
-            preferenze: document.getElementById('profPreferenze')?.value || ''
-        };
-
-        try {
-            const res = await fetch('http://localhost:3000/api/profile/update', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(datiAggiornati)
-            });
-
-            if (res.ok) {
-                const datiPerLocalStorage = { ...datiAggiornati };
-                delete datiPerLocalStorage.password;
-
-                Object.assign(user, datiPerLocalStorage); 
-                localStorage.setItem('user', JSON.stringify(user));
-                
-                document.getElementById('profPassword').value = '';
-                alert("Profilo aggiornato con successo!");
-            } else {
-                alert("Errore durante l'aggiornamento del profilo.");
-            }
-        } catch (err) {
-            alert("Errore di connessione al server.");
-        }
-    });
-});
-
-
-function isLogger() {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-        window.location.href = "login.html";
-    } else {
-        popola_scheda(user);
+    } else { // user.ruolo === 'cliente'
+        document.getElementById('sezione-campi-cliente').classList.remove('d-none');
+        document.getElementById('sezione-campi-ristoratore').classList.add('d-none');
     }
 }
 
+
+async function caricaDatiProfilo() {
+    if (user.ruolo === 'ristoratore') {
+       try {
+            const res = await fetch(`http://localhost:3000/api/restaurant/profile/${user.email}`);
+            if (res.ok) {
+                const data = await res.json();
+                document.getElementById('profNomeRistorante').value = data.nomeRistorante || '';
+                document.getElementById('profTelefono').value = data.telefono || '';
+                document.getElementById('profPiva').value = data.partitaIva || '';
+                document.getElementById('profSede').value = data.indirizzo || '';
+            }
+        } catch (err) {
+            console.error("Errore caricamento dati ristorante:", err);
+        }
+
+    } else { // user.ruolo === 'cliente'
+        document.getElementById('profNome').value = user.nome || '';
+        document.getElementById('profCognome').value = user.cognome || '';
+        document.getElementById('profUsername').value = user.username || '';
+        document.getElementById('profIndirizzo').value = user.indirizzo || '';
+        document.getElementById('profPagamento').value = user.metodoPagamento || 'carta_credito';
+        document.getElementById('profPreferenze').value = user.preferenze || '';
+
+        await caricaOrdiniCliente(user.email);
+    }
+}
+
+
+// Salvataggio e modifica dati profilo
+
+async function gestisciSalvataggioProfilo(e) {
+    e.preventDefault();
+
+    let datiAggiornati = {}
+    let endpoint = '';
+
+    if (user.ruolo === 'ristoratore') {
+        datiAggiornati = {
+            nome: document.getElementById('profNome').value,
+            cognome: document.getElementById('profCognome').value,
+            password: document.getElementById('profPassword')?.value || '',
+            nomeRistorante: document.getElementById('profNomeRistorante').value,
+            telefono: document.getElementById('profTelefono').value,
+            partitaIva: document.getElementById('profPiva').value,
+            indirizzo: document.getElementById('profSede').value
+        };
+        endpoint = 'http://localhost:3000/api/restaurant/profile';
+    } else {
+        datiAggiornati = {
+            nome: document.getElementById('profNome').value,
+            cognome: document.getElementById('profCognome').value,
+            username: document.getElementById('profUsername').value,
+            password: document.getElementById('profPassword')?.value || '',
+            indirizzo: document.getElementById('profIndirizzo').value,
+            metodoPagamento: document.getElementById('profPagamento').value,
+            preferenze: document.getElementById('profPreferenze').value
+        };
+        endpoint = 'http://localhost:3000/api/profile/update';
+    }
+
+    try {
+        const res = await fetch(endpoint, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datiAggiornati)
+        });
+
+        if (res.ok) {
+            const datiPerLocalStorage = { ...datiAggiornati };
+            delete datiPerLocalStorage.password;
+
+            localStorage.setItem('user', JSON.stringify(datiPerLocalStorage));
+                
+            document.getElementById('profPassword').value = '';
+            alert("Profilo aggiornato con successo!");
+        } else {
+            alert("Errore durante l'aggiornamento del profilo.");
+        }
+    } catch (err) {
+        console.error(err);
+        alert("Errore di connessione al server.");
+    }
+}
+
+
+// Gestione ordini cliente
 
 async function caricaOrdiniCliente(email) {
     try {
@@ -95,9 +134,9 @@ async function caricaOrdiniCliente(email) {
     }
 }
 
+
 function mostraOrdiniCliente(ordini) {
     const contenitore = document.getElementById('elenco-ordini-cliente');
-    if (!contenitore) return;
 
     if (ordini.length === 0) {
         contenitore.innerHTML = '<p class="text-muted">Non hai ancora effettuato nessun ordine.</p>';
@@ -107,22 +146,20 @@ function mostraOrdiniCliente(ordini) {
     contenitore.innerHTML = ordini.map(o => {
         const piatti = o.piatti.map(p => `${p.nome} (x${p.quantita})`).join(', ');
         const badge = o.stato === 'consegnato' ? 'success' : (o.stato === 'in consegna' ? 'info' : 'warning');
-        
-        const nomeRistorante = o.piatti && o.piatti.length > 0 && o.piatti[0].ristoranteNome 
-            ? o.piatti[0].ristoranteNome 
-            : "Ristorante";
+        const nomeRistorante = o.piatti?.length > 0 && o.piatti[0].ristoranteNome ? o.piatti[0].ristoranteNome : "Ristorante";
 
         let extraInfo = '';
         if (o.modalita === 'ritiro') {
             if (o.stato !== 'consegnato') {
                 const minuti = o.tempoAttesaStimato || 'N/A';
                 extraInfo = `Ritiro stimato in ${minuti} min`;
+
             }
-        } else {
+        } else { // modalita === 'domicilio'
             extraInfo = `Domicilio: ${o.luogoConsegna}`;
         }
 
-        let btnConferma = (o.stato === 'in consegna' && o.modalita === 'domicilio') 
+        const btnConferma = (o.stato === 'in consegna' && o.modalita === 'domicilio') 
             ? `<button class="btn btn-sm btn-success mt-3 w-100 fw-bold" onclick="confermaRicezioneOrdine('${o._id}')">Segnala come Ricevuto</button>` 
             : '';
 
@@ -140,8 +177,10 @@ function mostraOrdiniCliente(ordini) {
                     ${btnConferma}
                 </div>
             </div>`;
-        }).join('');
+
+    }).join('');
 }
+
 
 async function confermaRicezioneOrdine(idOrdine) {
     try {
@@ -152,9 +191,12 @@ async function confermaRicezioneOrdine(idOrdine) {
         });
         if (res.ok) caricaOrdiniCliente(user.email);
     } catch (err) {
-        console.error("Errore conferma ordine", err);
+        console.error(err);
     }
 }
+
+
+// Eliminazione dati profilo e logout
 
 async function eliminaAccount() {
     const conferma = confirm("Sei sicuro di voler eliminare definitivamente il tuo account? Questa azione è irreversibile.");
@@ -169,16 +211,17 @@ async function eliminaAccount() {
 
             if (res.ok) {
                 alert("Account eliminato con successo. Arrivederci!");
-                localStorage.removeItem('user');
-                window.location.href = "index.html"; // Riporta alla home
+                logout();
             } else {
                 alert("Errore durante l'eliminazione dell'account.");
             }
         } catch (err) {
+            console.error(err);
             alert("Errore di rete. Impossibile eliminare l'account ora.");
         }
     }
 }
+
 
 function logout() {
     localStorage.removeItem('user');
