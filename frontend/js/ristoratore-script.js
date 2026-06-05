@@ -90,16 +90,15 @@ document.getElementById('formMenu').addEventListener('submit', async (e) => {
 function mostraMenu(menuArray) {
     const container = document.getElementById('grigliaMenuRistorante');
     container.innerHTML = menuArray.map(item => `
-            <div class="col-md-6 mb-3">
-                <div class="card h-100">
-                    <img src="${item.foto}" class="card-img-top" style="height: 150px; object-fit: cover;">
-                    <div class="card-body p-2">
+            <div class="col-md-3 mb-4"> <div class="card h-100 shadow-sm">
+                    <img src="${item.foto}" class="card-img-top" style="height: 200px; object-fit: cover; width: 100%;">
+                    <div class="card-body p-2 d-flex flex-column">
                         <h6 class="card-title">${item.nome}</h6>
                         <p class="card-text small mb-1 text-muted">${item.tipologia} - €${item.prezzo}</p>
                         <p class="card-text small mb-2 text-truncate" title="${item.ingredienti.join(', ')}">
                             ${item.ingredienti.join(', ')}
                         </p>
-                        <button class="btn btn-sm btn-outline-danger w-100" onclick="eliminaPiatto('${item._id}')">Rimuovi</button>
+                        <button class="btn btn-sm btn-outline-danger w-100 mt-auto" onclick="eliminaPiatto('${item._id}')">Rimuovi</button>
                     </div>
                 </div>
             </div>

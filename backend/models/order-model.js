@@ -106,11 +106,26 @@ async function getRestaurantStats(email) {
     return { totaleGuadagni, numeroOrdini, piattoPiuVenduto, maxVendite };
 }
 
+async function haOrdiniAperti(email, ruolo) {
+    const query = { stato: { $ne: 'consegnato' } }; // Cerca ordini NON completati
+    
+    if (ruolo === 'ristoratore') {
+        query.ristoranteEmail = email;
+    } else {
+        query.clienteEmail = email;
+    }
+    
+    // findOne è molto veloce: si ferma appena trova anche solo 1 ordine aperto
+    const openOrder = await coll().findOne(query);
+    return !!openOrder; // Restituisce true se ha trovato ordini aperti, false altrimenti
+}
+
 module.exports = { 
     createOrder, 
     getOrdersByClient, 
     getOrdersByRestaurant, 
     updateOrderStatus,
     calcolaTempoAttesa,
-    getRestaurantStats
+    getRestaurantStats,
+    haOrdiniAperti
 };

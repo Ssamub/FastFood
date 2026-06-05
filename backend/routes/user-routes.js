@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 
 const { getUserByEmail, createUser, updateUser, deleteUser } = require('../models/user-model.js');
 const { deleteRestaurantByEmail } = require('../models/restaurant-model.js');
+const { haOrdiniAperti } = require('../models/order-model.js');
 
 const router = express.Router();
 
@@ -76,7 +77,10 @@ router.post('/login', async (req, res) => {
                     email: user.email,
                     indirizzo: user.indirizzo,
                     metodoPagamento: user.metodoPagamento,
-                    preferenze: user.preferenze
+                    preferenze: user.preferenze,
+                    numeroCarta: user.numeroCarta || "",
+                    scadenzaCarta: user.scadenzaCarta || "",
+                    cvvCarta: user.cvvCarta || ""
                 }
             });
         } else {
@@ -88,7 +92,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.put('/profile/update', async (req, res) => {
-    const { nome, cognome, username, email, password, indirizzo, metodoPagamento, preferenze } = req.body;
+    const { nome, cognome, username, email, password, indirizzo, metodoPagamento, preferenze, numeroCarta, scadenzaCarta, cvvCarta } = req.body;
     const lowerEmail = email.toLowerCase();
 
     try {
@@ -101,6 +105,9 @@ router.put('/profile/update', async (req, res) => {
         if (indirizzo) datiAggiornati.indirizzo = indirizzo;
         if (metodoPagamento) datiAggiornati.metodoPagamento = metodoPagamento;
         if (preferenze) datiAggiornati.preferenze = preferenze;
+        if (numeroCarta) datiAggiornati.numeroCarta = numeroCarta;
+        if (scadenzaCarta) datiAggiornati.scadenzaCarta = scadenzaCarta;
+        if (cvvCarta) datiAggiornati.cvvCarta = cvvCarta;
 
         if (password) {
             if (password.length < 6) return res.status(400).json({ error: "Password troppo corta" });
@@ -128,6 +135,11 @@ router.delete('/profile/delete', async (req, res) => {
         const user = await getUserByEmail(lowerEmail);
         
         if (user) {
+            const ordiniAperti = await haOrdiniAperti(lowerEmail);
+            if (ordiniAperti) {
+                return res.status(400).json({ error: "Impossibile eliminare il profilo: ci sono ordini ancora aperti" });
+            }
+
             await deleteUser(lowerEmail);
             
             if (user.ruolo === 'ristoratore') {
