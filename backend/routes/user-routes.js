@@ -7,7 +7,7 @@ const { deleteRestaurantByEmail } = require('../models/restaurant-model.js');
 const router = express.Router();
 
 router.post('/register', async (req, res) => {
-    const { ruolo, nome, cognome, email, password, indirizzo, metodoPagamento, preferenze } = req.body;
+    const { ruolo, nome, cognome, username, email, password, indirizzo, metodoPagamento, preferenze } = req.body;
 
     if (!nome || nome.length < 2) return res.status(400).json({ error: "Nome troppo corto" });
     if (!cognome || cognome.length < 2) return res.status(400).json({ error: "Cognome troppo corto" });
@@ -20,7 +20,8 @@ router.post('/register', async (req, res) => {
         const user = {
             ruolo: ruolo,
             nome: nome, 
-            cognome: cognome, 
+            cognome: cognome,
+            username: username,
             email: lowerEmail,
             password: hashedPassword,
             indirizzo: indirizzo,
@@ -36,6 +37,7 @@ router.post('/register', async (req, res) => {
                 ruolo,
                 nome,
                 cognome,
+                username,
                 email: lowerEmail, 
                 indirizzo,
                 metodoPagamento,
@@ -85,17 +87,23 @@ router.post('/login', async (req, res) => {
 });
 
 router.put('/profile/update', async (req, res) => {
-    const { email, nome, cognome, indirizzo, metodoPagamento, preferenze } = req.body;
+    const { nome, cognome, username, email, password, indirizzo, metodoPagamento, preferenze } = req.body;
     const lowerEmail = email.toLowerCase();
 
     try {
         const updateData = { 
             nome: nome, 
             cognome: cognome, 
+            username: username,
             indirizzo: indirizzo, 
             metodoPagamento: metodoPagamento, 
             preferenze: preferenze 
         };
+
+        if (password) {
+            if (password.length < 6) return res.status(400).json({ error: "Password troppo corta" });
+            updateData.password = await bcrypt.hash(password, 10);
+        }
         
         const result = await updateUser(lowerEmail, updateData);
 
