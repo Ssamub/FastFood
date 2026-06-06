@@ -32,10 +32,10 @@ router.get('/restaurant/profile/:email', async (req, res) => {
     }
 });
 
-router.put('/restaurant/update', async (req, res) => {
+router.put('/restaurant/update/:email', async (req, res) => {
     try {
-        const { email, nomeRistorante, telefono, partitaIva, indirizzo } = req.body;
-        const lowerEmail = email.toLowerCase();
+        const { nomeRistorante, telefono, partitaIva, indirizzo } = req.body;
+        const lowerEmail = req.params.email.toLowerCase();
         await upsertRestaurantProfile(lowerEmail, { nomeRistorante, telefono, partitaIva, indirizzo });
         res.json({ message: "Profilo ristorante aggiornato" });
     } catch (err) {
@@ -43,10 +43,10 @@ router.put('/restaurant/update', async (req, res) => {
     }
 });
 
-router.post('/restaurant/menu', async (req, res) => {
+router.post('/restaurant/menu/:email', async (req, res) => {
     try {
-        const { email, nome, tipologia, prezzo, ingredienti, foto } = req.body;
-        const lowerEmail = email.toLowerCase();
+        const lowerEmail = req.params.email.toLowerCase();
+        const { nome, tipologia, prezzo, ingredienti, foto } = req.body;
         await addMenuItem(lowerEmail, { nome, tipologia, prezzo, ingredienti, foto });
         res.status(201).json({ message: "Piatto aggiunto" });
     } catch (err) {

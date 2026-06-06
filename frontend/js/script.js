@@ -25,7 +25,7 @@ function applicaFiltriRicerca() {
 }
 
 function caricaRistoranti() {
-    fetch('http://localhost:3000/api/restaurants')
+    fetch('http://localhost:3000/api/restaurant/list')
         .then(res => res.json())
         .then(result => {
             tuttiIRistoranti = result;

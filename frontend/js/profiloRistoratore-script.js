@@ -49,13 +49,13 @@ async function gestisciSalvataggioProfilo(e) {
     };
 
     try {
-        const resUser = await fetch('http://localhost:3000/api/profile/update', {
+        const resUser = await fetch(`http://localhost:3000/api/user/update/${user.email}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datiAnagrafici)
         });
 
-        const resRest = await fetch('http://localhost:3000/api/restaurant/profile/update', {
+        const resRest = await fetch(`http://localhost:3000/api/restaurant/update/${user.email}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datiRistorante)
@@ -78,7 +78,7 @@ async function gestisciSalvataggioProfilo(e) {
 async function eliminaAccount() {
     if (confirm("Sei sicuro di voler eliminare definitivamente il tuo account e l'intero ristorante? L'azione è irreversibile.")) {
         try {
-            const res = await fetch('http://localhost:3000/api/profile/delete', {
+            const res = await fetch(`http://localhost:3000/api/user/delete/${user.email}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: user.email })

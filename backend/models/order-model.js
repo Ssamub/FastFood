@@ -14,7 +14,7 @@ async function getOrdersByClient(email) {
 }
 
 async function getOrdersByRestaurant(email) {
-    return coll().find({ ristoranteEmail: email }).sort({ createdAt: 1 }).toArray();
+    return coll().find({ ristoranteEmail: email }).sort({ createdAt: -1 }).toArray();
 }
 
 
@@ -80,7 +80,6 @@ async function calcolaTempoAttesa(emailRistorante, piattiNuovoOrdine = []) {
 }
 
 async function getRestaurantStats(email) {
-    // Calcola le statistiche solo sugli ordini effettivamente consegnati
     const ordini = await coll().find({ ristoranteEmail: email, stato: 'consegnato' }).toArray();
     
     const totaleGuadagni = ordini.reduce((sum, o) => sum + o.totale, 0);

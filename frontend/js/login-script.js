@@ -22,7 +22,7 @@ function login() {
         body: JSON.stringify(user)
     };
 
-    fetch('http://localhost:3000/api/login', options)
+    fetch('http://localhost:3000/api/user/login', options)
         .then(res => res.json())
         .then(result => checkLogin(result));
 }

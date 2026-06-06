@@ -34,7 +34,6 @@ async function gestisciSalvataggioProfilo(e) {
         nome: document.getElementById('profNome').value,
         cognome: document.getElementById('profCognome').value,
         username: document.getElementById('profUsername').value,
-        email: user.email,
         password: document.getElementById('profPassword').value || '',
         indirizzo: document.getElementById('profIndirizzo').value,
         metodoPagamento: document.getElementById('profPagamento').value,
@@ -46,7 +45,7 @@ async function gestisciSalvataggioProfilo(e) {
     };
 
     try {
-        const res = await fetch('http://localhost:3000/api/profile/update', {
+        const res = await fetch(`http://localhost:3000/api/user/update/${user.email}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datiAnagrafici)
@@ -68,7 +67,7 @@ async function gestisciSalvataggioProfilo(e) {
 
 async function caricaOrdiniCliente(email) {
     try {
-        const res = await fetch(`http://localhost:3000/api/orders/client/${email}`);
+        const res = await fetch(`http://localhost:3000/api/order/client/${email}`);
         if (res.ok) mostraOrdiniCliente(await res.json());
     } catch (err) {
         console.error(err);
@@ -117,7 +116,7 @@ function mostraOrdiniCliente(ordini) {
 
 async function confermaRicezioneOrdine(idOrdine) {
     try {
-        const res = await fetch(`http://localhost:3000/api/orders/${idOrdine}/status`, {
+        const res = await fetch(`http://localhost:3000/api/order/${idOrdine}/status`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ stato: 'consegnato' })
@@ -131,7 +130,7 @@ async function confermaRicezioneOrdine(idOrdine) {
 async function eliminaAccount() {
     if (confirm("Sei sicuro di voler eliminare definitivamente il tuo account?")) {
         try {
-            const res = await fetch('http://localhost:3000/api/profile/delete', {
+            const res = await fetch(`http://localhost:3000/api/user/delete/${user.email}`, {
                 method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: user.email })

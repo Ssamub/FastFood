@@ -57,7 +57,7 @@ function register() {
         body: JSON.stringify(user)
     };
 
-    fetch('http://localhost:3000/api/register', options)
+    fetch('http://localhost:3000/api/user/register', options)
         .then(res => res.json())
         .then(result => checkRegister(result, ruolo, email));
 }
@@ -86,7 +86,7 @@ function checkRegister(result, ruolo, email) {
                 body: JSON.stringify(restData)
             };
 
-            fetch("http://localhost:3000/api/restaurant/profile", restOptions)
+            fetch("http://localhost:3000/api/restaurant/update", restOptions)
                 .then(response => response.json())
                 .then(res => {
                     alert.classList.add('d-none');

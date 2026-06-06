@@ -38,22 +38,43 @@
             <div class="tab-pane fade show active h-100" id="ordini" role="tabpanel">
                 <div class="card shadow-sm border-0 h-100 d-flex flex-column">
                     <div class="card-body p-0 flex-grow-1 overflow-y-auto">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light sticky-top">
+                        
+                        <h5 class="bg-light p-3 mb-0 fw-bold text-primary border-bottom sticky-top shadow-sm">Da Preparare / In Consegna</h5>
+                        <table class="table table-hover align-middle mb-5" style="table-layout: fixed;">
+                            <thead class="table-light">
                                 <tr>
-                                    <th class="ps-3">ID</th>
-                                    <th>Cliente</th>
-                                    <th>Piatti</th>
-                                    <th>Totale</th>
-                                    <th>Modalità</th>
-                                    <th>Stato</th>
-                                    <th class="pe-3">Azioni</th>
+                                    <th class="ps-3" style="width: 10%;">ID</th>
+                                    <th style="width: 15%;">Cliente</th>
+                                    <th style="width: 25%;">Piatti</th>
+                                    <th style="width: 10%;">Totale</th>
+                                    <th style="width: 10%;">Modalità</th>
+                                    <th style="width: 15%;">Stato</th>
+                                    <th class="pe-3" style="width: 15%;">Azioni</th>
                                 </tr>
                             </thead>
-                            <tbody id="tabella-ordini-ristorante">
+                            <tbody id="tabella-ordini-attivi">
                                 <tr><td colspan="7" class="text-center text-muted py-4">Caricamento ordini in corso...</td></tr>
                             </tbody>
                         </table>
+
+                        <h5 class="bg-light p-3 mb-0 fw-bold text-success border-bottom border-top sticky-top shadow-sm">Completati</h5>
+                        <table class="table table-hover align-middle mb-0" style="table-layout: fixed;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3" style="width: 10%;">ID</th>
+                                    <th style="width: 15%;">Cliente</th>
+                                    <th style="width: 25%;">Piatti</th>
+                                    <th style="width: 10%;">Totale</th>
+                                    <th style="width: 10%;">Modalità</th>
+                                    <th style="width: 15%;">Stato</th>
+                                    <th class="pe-3" style="width: 15%;">Azioni</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabella-ordini-completati">
+                                <tr><td colspan="7" class="text-center text-muted py-4">Caricamento storico...</td></tr>
+                            </tbody>
+                        </table>
+
                     </div>
                 </div>
             </div>
@@ -64,12 +85,14 @@
                     <div class="card-body">
                         <h5 class="mb-3 text-primary fw-bold border-bottom pb-2">Aggiungi Nuovo Piatto</h5>
                         <form id="formMenu" class="row g-3 mb-2">
+                            
                             <div class="col-12">
-                                <label class="form-label small text-muted">Seleziona dalla lista comune</label>
+                                <label class="form-label small text-muted">Cerca nella lista comune</label>
                                 <select id="selectPiattoComune" class="form-select border-primary bg-primary bg-opacity-10">
                                     <option value="">-- Creazione piatto personalizzato vuoto --</option>
                                 </select>
                             </div>
+
                             <div class="col-md-4">
                                 <label class="form-label small text-muted">Nome</label>
                                 <input type="text" id="piattoNome" class="form-control" required>
@@ -91,7 +114,7 @@
                                 <textarea id="piattoIngredienti" class="form-control" rows="2" required></textarea>
                             </div>
                             <div class="col-12">
-                                <button type="submit" class="btn btn-primary fw-bold">➕ Aggiungi al Menu</button>
+                                <button type="submit" class="btn btn-primary fw-bold">Aggiungi al Menu</button>
                             </div>
                         </form>
                     </div>
@@ -101,7 +124,6 @@
                 <div class="row g-3" id="grigliaMenuRistorante"></div>
             </div>
 
-
             <div class="tab-pane fade" id="stats" role="tabpanel">
                 <div class="card shadow-sm border-0">
                     <div class="card-body text-center p-5">
@@ -109,7 +131,7 @@
                         <div class="row">
                             <div class="col-md-4 mb-3">
                                 <div class="p-4 bg-light rounded-3 shadow-sm border">
-                                    <h6 class="text-muted text-uppercase mb-2">Ordini Evaso</h6>
+                                    <h6 class="text-muted text-uppercase mb-2">Numero Ordini</h6>
                                     <h2 id="statOrdini" class="fw-bold text-primary mb-0">0</h2>
                                 </div>
                             </div>
@@ -121,9 +143,8 @@
                             </div>
                             <div class="col-md-4 mb-3">
                                 <div class="p-4 bg-light rounded-3 shadow-sm border">
-                                    <h6 class="text-muted text-uppercase mb-2">Piatto Più Venduto</h6>
+                                    <h6 class="text-muted text-uppercase mb-2">Piatto Più Venduto <small id="statPiattoQta" class="text-muted fw-bold"></small></h6>
                                     <h4 id="statPiatto" class="fw-bold text-primary mb-0">-</h4>
-                                    <small id="statPiattoQta" class="text-muted fw-bold"></small>
                                 </div>
                             </div>
                         </div>

@@ -91,9 +91,9 @@ router.post('/user/login', async (req, res) => {
     }
 });
 
-router.put('/user/update', async (req, res) => {
-    const { nome, cognome, username, email, password, indirizzo, metodoPagamento, preferenze, numeroCarta, scadenzaCarta, cvvCarta } = req.body;
-    const lowerEmail = email.toLowerCase();
+router.put('/user/update/:email', async (req, res) => {
+    const { nome, cognome, username, password, indirizzo, metodoPagamento, preferenze, numeroCarta, scadenzaCarta, cvvCarta } = req.body;
+    const lowerEmail = req.params.email.toLowerCase();
 
     try {
         const datiAggiornati = { 
@@ -127,15 +127,14 @@ router.put('/user/update', async (req, res) => {
     }
 });
 
-router.delete('/user/delete', async (req, res) => {
-        const { email } = req.body;
-        const lowerEmail = email.toLowerCase();
+router.delete('/user/delete/:email', async (req, res) => {
+        const lowerEmail = req.params.email.toLowerCase();
 
     try {
         const user = await getUserByEmail(lowerEmail);
         
         if (user) {
-            const ordiniAperti = await haOrdiniAperti(lowerEmail);
+            const ordiniAperti = await haOrdiniAperti(lowerEmail, user.ruolo);
             if (ordiniAperti) {
                 return res.status(400).json({ error: "Impossibile eliminare il profilo: ci sono ordini ancora aperti" });
             }

@@ -125,7 +125,7 @@ async function inviaOrdine(e) {
                 luogoConsegna: modalita === 'domicilio' ? luogoConsegna : null
             };
 
-            const response = await fetch('http://localhost:3000/api/orders', {
+            const response = await fetch('http://localhost:3000/api/order/create', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
@@ -139,7 +139,7 @@ async function inviaOrdine(e) {
 
         // 2. Se l'ordine è andato bene, salvo la carta (se non è già salvata o se è stata modificata)
         if (utente.numeroCarta !== numCarta || utente.scadenzaCarta !== scadCarta || utente.cvvCarta !== cvvCarta) {
-            await fetch('http://localhost:3000/api/profile/update', {
+            await fetch('http://localhost:3000/api/user/update', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

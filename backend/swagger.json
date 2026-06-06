@@ -104,9 +104,19 @@
         }
       }
     },
-    "/api/user/update": {
+    "/api/user/update/{email}": {
       "put": {
         "description": "",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -134,9 +144,6 @@
                     "example": "any"
                   },
                   "username": {
-                    "example": "any"
-                  },
-                  "email": {
                     "example": "any"
                   },
                   "password": {
@@ -167,9 +174,19 @@
         }
       }
     },
-    "/api/user/delete": {
+    "/api/user/delete/{email}": {
       "delete": {
         "description": "",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -182,20 +199,6 @@
           },
           "500": {
             "description": "Internal Server Error"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "email": {
-                    "example": "any"
-                  }
-                }
-              }
-            }
           }
         }
       }
@@ -239,9 +242,19 @@
         }
       }
     },
-    "/api/restaurant/update": {
+    "/api/restaurant/update/{email}": {
       "put": {
         "description": "",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -256,9 +269,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "email": {
-                    "example": "any"
-                  },
                   "nomeRistorante": {
                     "example": "any"
                   },
@@ -278,9 +288,19 @@
         }
       }
     },
-    "/api/restaurant/menu": {
+    "/api/restaurant/menu/{email}": {
       "post": {
         "description": "",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "201": {
             "description": "Created"
@@ -295,9 +315,6 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "email": {
-                    "example": "any"
-                  },
                   "nome": {
                     "example": "any"
                   },
