@@ -3,7 +3,7 @@ const { getCollection } = require('../db/database.js');
 
 const router = express.Router();
 
-router.get('/meals', async (req, res) => {
+router.get('/meal/list', async (req, res) => {
     try {
         const coll = getCollection('meals');
         const result = await coll.find({}).toArray();

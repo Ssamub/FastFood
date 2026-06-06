@@ -7,7 +7,7 @@ const { haOrdiniAperti } = require('../models/order-model.js');
 
 const router = express.Router();
 
-router.post('/register', async (req, res) => {
+router.post('/user/register', async (req, res) => {
     const { ruolo, nome, cognome, username, email, password, indirizzo, metodoPagamento, preferenze } = req.body;
 
     if (!nome || nome.length < 2) return res.status(400).json({ error: "Nome troppo corto" });
@@ -55,7 +55,7 @@ router.post('/register', async (req, res) => {
     }
 });
 
-router.post('/login', async (req, res) => {
+router.post('/user/login', async (req, res) => {
     const { ruolo, email, password } = req.body;
     const lowerEmail = email.toLowerCase();
 
@@ -91,7 +91,7 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.put('/profile/update', async (req, res) => {
+router.put('/user/update', async (req, res) => {
     const { nome, cognome, username, email, password, indirizzo, metodoPagamento, preferenze, numeroCarta, scadenzaCarta, cvvCarta } = req.body;
     const lowerEmail = email.toLowerCase();
 
@@ -127,7 +127,7 @@ router.put('/profile/update', async (req, res) => {
     }
 });
 
-router.delete('/profile/delete', async (req, res) => {
+router.delete('/user/delete', async (req, res) => {
         const { email } = req.body;
         const lowerEmail = email.toLowerCase();
 

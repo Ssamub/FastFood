@@ -1,4 +1,4 @@
-const { MongoClient } = require("mongodb"); //mongoclient?
+const { MongoClient } = require("mongodb");
 
 const mongoURL = "mongodb+srv://s4mu:lamammaebella@cluster0.b2nswh9.mongodb.net/";
 const client = new MongoClient(mongoURL);

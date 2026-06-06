@@ -11,7 +11,7 @@
     }
   ],
   "paths": {
-    "/api/register": {
+    "/api/user/register": {
       "post": {
         "description": "",
         "responses": {
@@ -43,6 +43,9 @@
                   "cognome": {
                     "example": "any"
                   },
+                  "username": {
+                    "example": "any"
+                  },
                   "email": {
                     "example": "any"
                   },
@@ -65,7 +68,7 @@
         }
       }
     },
-    "/api/login": {
+    "/api/user/login": {
       "post": {
         "description": "",
         "responses": {
@@ -101,12 +104,15 @@
         }
       }
     },
-    "/api/profile/update": {
+    "/api/user/update": {
       "put": {
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -121,13 +127,19 @@
               "schema": {
                 "type": "object",
                 "properties": {
-                  "email": {
-                    "example": "any"
-                  },
                   "nome": {
                     "example": "any"
                   },
                   "cognome": {
+                    "example": "any"
+                  },
+                  "username": {
+                    "example": "any"
+                  },
+                  "email": {
+                    "example": "any"
+                  },
+                  "password": {
                     "example": "any"
                   },
                   "indirizzo": {
@@ -138,6 +150,15 @@
                   },
                   "preferenze": {
                     "example": "any"
+                  },
+                  "numeroCarta": {
+                    "example": "any"
+                  },
+                  "scadenzaCarta": {
+                    "example": "any"
+                  },
+                  "cvvCarta": {
+                    "example": "any"
                   }
                 }
               }
@@ -146,12 +167,15 @@
         }
       }
     },
-    "/api/profile/delete": {
+    "/api/user/delete": {
       "delete": {
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "400": {
+            "description": "Bad Request"
           },
           "404": {
             "description": "Not Found"
@@ -176,7 +200,7 @@
         }
       }
     },
-    "/api/restaurants": {
+    "/api/restaurant/list": {
       "get": {
         "description": "",
         "responses": {
@@ -215,7 +239,7 @@
         }
       }
     },
-    "/api/restaurant/profile": {
+    "/api/restaurant/update": {
       "put": {
         "description": "",
         "responses": {
@@ -330,7 +354,7 @@
         }
       }
     },
-    "/api/orders": {
+    "/api/order/create": {
       "post": {
         "description": "",
         "responses": {
@@ -372,7 +396,7 @@
         }
       }
     },
-    "/api/orders/client/{email}": {
+    "/api/order/client/{email}": {
       "get": {
         "description": "",
         "parameters": [
@@ -395,7 +419,7 @@
         }
       }
     },
-    "/api/orders/restaurant/{email}": {
+    "/api/order/restaurant/{email}": {
       "get": {
         "description": "",
         "parameters": [
@@ -418,7 +442,7 @@
         }
       }
     },
-    "/api/orders/{id}/status": {
+    "/api/order/{id}/status": {
       "put": {
         "description": "",
         "parameters": [
@@ -458,7 +482,7 @@
         }
       }
     },
-    "/api/orders/stats/{email}": {
+    "/api/order/stats/{email}": {
       "get": {
         "description": "",
         "parameters": [
@@ -481,7 +505,7 @@
         }
       }
     },
-    "/api/meals": {
+    "/api/meal/list": {
       "get": {
         "description": "",
         "responses": {

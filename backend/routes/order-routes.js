@@ -10,7 +10,7 @@ const {
 
 const router = express.Router();
 
-router.post('/orders', async (req, res) => {
+router.post('/order/create', async (req, res) => {
     try {
         const { clienteEmail, ristoranteEmail, piatti, totale, modalita, luogoConsegna } = req.body;
 
@@ -36,7 +36,7 @@ router.post('/orders', async (req, res) => {
     }
 });
 
-router.get('/orders/client/:email', async (req, res) => {
+router.get('/order/client/:email', async (req, res) => {
     try {
         const ordini = await getOrdersByClient(req.params.email);
         res.json(ordini);
@@ -45,7 +45,7 @@ router.get('/orders/client/:email', async (req, res) => {
     }
 });
 
-router.get('/orders/restaurant/:email', async (req, res) => {
+router.get('/order/restaurant/:email', async (req, res) => {
     try {
         const ordini = await getOrdersByRestaurant(req.params.email);
         res.json(ordini);
@@ -54,7 +54,7 @@ router.get('/orders/restaurant/:email', async (req, res) => {
     }
 });
 
-router.put('/orders/:id/status', async (req, res) => {
+router.put('/order/:id/status', async (req, res) => {
     try {
         const { stato } = req.body;
         const success = await updateOrderStatus(req.params.id, stato);
@@ -68,7 +68,7 @@ router.put('/orders/:id/status', async (req, res) => {
     }
 });
 
-router.get('/orders/stats/:email', async (req, res) => {
+router.get('/order/stats/:email', async (req, res) => {
     try {
         const stats = await getRestaurantStats(req.params.email);
         res.json(stats);

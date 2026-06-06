@@ -55,7 +55,7 @@ async function gestisciSalvataggioProfilo(e) {
             body: JSON.stringify(datiAnagrafici)
         });
 
-        const resRest = await fetch('http://localhost:3000/api/restaurant/profile', {
+        const resRest = await fetch('http://localhost:3000/api/restaurant/profile/update', {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datiRistorante)

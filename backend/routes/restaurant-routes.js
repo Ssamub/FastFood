@@ -9,7 +9,7 @@ const {
 
 const router = express.Router();
 
-router.get('/restaurants', async (req, res) => {
+router.get('/restaurant/list', async (req, res) => {
     try {
         const ristoranti = await getAllRestaurants();
         res.json(ristoranti);
@@ -32,7 +32,7 @@ router.get('/restaurant/profile/:email', async (req, res) => {
     }
 });
 
-router.put('/restaurant/profile', async (req, res) => {
+router.put('/restaurant/update', async (req, res) => {
     try {
         const { email, nomeRistorante, telefono, partitaIva, indirizzo } = req.body;
         const lowerEmail = email.toLowerCase();
