@@ -65,10 +65,12 @@ function gestisciInterfacciaAuth() {
     const container = document.getElementById('auth-buttons-container');
     if (!container) return;
     const user = JSON.parse(localStorage.getItem('user'));
+    
     if (user && user.ruolo === 'cliente') {
         container.innerHTML = `
             <a class="btn btn-warning d-flex align-items-center" href="carrello.html">Carrello</a>
-            <a class="btn btn-primary ms-2" href="profiloCliente.html">Profilo</a>
+            <a class="btn btn-success ms-2 d-flex align-items-center" href="ordini.html">Ordini</a>
+            <a class="btn btn-primary ms-2 d-flex align-items-center" href="profilo.html">Profilo</a>
         `;
     } else {
         container.innerHTML = `

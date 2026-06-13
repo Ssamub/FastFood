@@ -35,15 +35,15 @@ function impostaDatiPagina() {
     document.getElementById('titolo-menu').textContent = `Menu di ${datiRistorante.nomeRistorante}`;
 }
 
-// Gestione dei pulsanti di autenticazione
 function gestisciInterfacciaAuth() {
     const container = document.getElementById('auth-buttons-container');
     if (!container) return;
     const user = JSON.parse(localStorage.getItem('user'));
+    
     if (user && user.ruolo === 'cliente') {
         container.innerHTML = `
-            <a class="btn btn-primary" href="profiloCliente.html">Profilo</a>
-            <button class="btn btn-danger ms-2" onclick="logout()">Esci</button>
+            <a class="btn btn-success d-flex align-items-center" href="ordini.html">Ordini</a>
+            <a class="btn btn-primary ms-2 d-flex align-items-center" href="profilo.html">Profilo</a>
         `;
     } else {
         container.innerHTML = `
