@@ -86,7 +86,7 @@ function checkRegister(result, ruolo, email) {
             body: JSON.stringify(datiRistorante)
         };
 
-        fetch("http://localhost:3000/api/restaurant/update", restOptions)
+        fetch(`http://localhost:3000/api/restaurant/update/${email}`, restOptions)
             .then(response => response.json())
             .then(res => {
                 alert.classList.add('d-none');

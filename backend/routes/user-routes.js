@@ -12,8 +12,12 @@ router.post('/user/register', async (req, res) => {
 
     if (!nome || nome.length < 2) return res.status(400).json({ error: "Nome troppo corto" });
     if (!cognome || cognome.length < 2) return res.status(400).json({ error: "Cognome troppo corto" });
-    if (!username || username.length < 3) return res.status(400).json({ error: "Username troppo corto" });
     if (!password || password.length < 6) return res.status(400).json({ error: "Password troppo corta" });
+    if (ruolo === 'cliente') {
+        if (!username || username.length < 3) {
+            return res.status(400).json({ error: "Username troppo corto" });
+        }
+    }
         
     const lowerEmail = email.toLowerCase();
     const hashedPassword = await bcrypt.hash(password, 10);
