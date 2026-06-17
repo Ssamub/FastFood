@@ -14,7 +14,7 @@ router.get('/restaurant/list', async (req, res) => {
         const ristoranti = await getAllRestaurants();
         res.json(ristoranti);
     } catch (err) {
-        res.status(500).json({ error: "Errore interno" });
+        res.status(500).json({ error: "Errore recupero ristoranti" });
     }
 });
 
@@ -28,7 +28,7 @@ router.get('/restaurant/profile/:email', async (req, res) => {
             res.status(404).json({ error: "Ristorante non trovato" });
         }
     } catch (err) {
-        res.status(500).json({ error: "Errore interno" });
+        res.status(500).json({ error: "Errore recupero ristorante" });
     }
 });
 
@@ -39,7 +39,7 @@ router.put('/restaurant/update/:email', async (req, res) => {
         await upsertRestaurantProfile(lowerEmail, { nomeRistorante, telefono, partitaIva, indirizzo });
         res.json({ message: "Profilo ristorante aggiornato" });
     } catch (err) {
-        res.status(500).json({ error: "Errore interno" });
+        res.status(500).json({ error: "Errore aggiornamento profilo" });
     }
 });
 
@@ -50,7 +50,7 @@ router.post('/restaurant/menu/:email', async (req, res) => {
         await addMenuItem(lowerEmail, { nome, tipologia, prezzo, ingredienti, foto });
         res.status(201).json({ message: "Piatto aggiunto" });
     } catch (err) {
-        res.status(500).json({ error: "Errore interno" });
+        res.status(500).json({ error: "Errore aggiunta piatto" });
     }
 });
 
@@ -64,7 +64,7 @@ router.delete('/restaurant/menu/:email/:id', async (req, res) => {
             res.status(404).json({ error: "Piatto non trovato" });
         }
     } catch (err) {
-        res.status(500).json({ error: "Errore interno" });
+        res.status(500).json({ error: "Errore rimozione piatto" });
     }
 });
 

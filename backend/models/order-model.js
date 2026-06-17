@@ -1,7 +1,9 @@
 const { getCollection } = require("../db/database.js");
 const { ObjectId } = require("mongodb");
 
-const coll = () => getCollection("orders");
+function coll() {
+    return getCollection("orders"); // per evitare di dover scrivere getCollection("orders") ogni volta
+}
 
 async function createOrder(data) {
     const doc = { ...data, createdAt: new Date() };
@@ -32,8 +34,11 @@ async function updateOrderStatus(id, nuovoStato) {
 
     if (result.modifiedCount > 0) {
         if (statiCucina.includes(ordine.stato) && statiFiniti.includes(nuovoStato)) {
+
             let piattiCompletati = 0;
-            ordine.piatti.forEach(p => piattiCompletati += p.quantita);
+            for (const p of ordine.piatti) {
+                piattiCompletati += p.quantita;
+            }
             let minutiDaScalare = piattiCompletati * 3;
 
             const ordiniDaAggiornare = await coll().find({
@@ -44,7 +49,7 @@ async function updateOrderStatus(id, nuovoStato) {
 
             for (const o of ordiniDaAggiornare) {
                 let nuovoTempo = (o.tempoAttesaStimato || 0) - minutiDaScalare;
-                if (nuovoTempo < 0) nuovoTempo = 0; // Evitiamo che il tempo diventi negativo!
+                if (nuovoTempo < 0) nuovoTempo = 0; // Evito tempo negativo
                 
                 await coll().updateOne(
                     { _id: o._id },
@@ -58,11 +63,19 @@ async function updateOrderStatus(id, nuovoStato) {
 }
 
 
-function contaPiatti(piatti = []) {
-    return piatti.reduce((totale, p) => totale + (p.quantita || 1), 0);
+function contaPiatti(piatti) {
+    if (piatti === undefined) {
+        piatti = [];
+    }
+
+    let totale = 0;
+    for (const p of piatti) {
+        totale += p.quantita || 1;
+    }
+    return totale;
 }
 
-
+// come sopra: if (piattiNuovoOrdine === undefined) {piattiNuovoOrdine = [];}    ==     nell'argomento piattiNuovoOrdine = [] : come qui sotto
 async function calcolaTempoAttesa(emailRistorante, piattiNuovoOrdine = []) {
     const ordiniInCoda = await coll()
         .find({
@@ -72,32 +85,40 @@ async function calcolaTempoAttesa(emailRistorante, piattiNuovoOrdine = []) {
         })
         .toArray();
 
-    const piattiInCoda = ordiniInCoda.reduce(
-        (totale, ordine) => totale + contaPiatti(ordine.piatti),
-        0
-    );
+    let piattiInCoda = 0;
+    for (const ordine of ordiniInCoda) {
+        piattiInCoda += contaPiatti(ordine.piatti);
+    }
     return (piattiInCoda + contaPiatti(piattiNuovoOrdine)) * 3;
 }
 
 async function getRestaurantStats(email) {
     const ordini = await coll().find({ ristoranteEmail: email, stato: 'consegnato' }).toArray();
-    
-    const totaleGuadagni = ordini.reduce((sum, o) => sum + o.totale, 0);
-    const numeroOrdini = ordini.length;
 
-    // Calcolo del piatto più venduto
+    // Calcolo del totale guadagnato e del piatto più venduto
+    let totaleGuadagni = 0;
     const conteggioPiatti = {};
-    ordini.forEach(o => {
-        o.piatti.forEach(p => {
-            conteggioPiatti[p.nome] = (conteggioPiatti[p.nome] || 0) + p.quantita;
-        });
-    });
+
+    for (const ordine of ordini) {
+        totaleGuadagni += ordine.totale;
+
+        for (const piatto of ordine.piatti) {
+            if (conteggioPiatti[piatto.nome] === undefined) {
+                conteggioPiatti[piatto.nome] = 0;
+            }
+
+            conteggioPiatti[piatto.nome] += piatto.quantita;
+        }
+    }
+
+    const numeroOrdini = ordini.length;
 
     let piattoPiuVenduto = "-";
     let maxVendite = 0;
-    for (const [nome, qta] of Object.entries(conteggioPiatti)) {
-        if (qta > maxVendite) {
-            maxVendite = qta;
+
+    for (const nome in conteggioPiatti) {
+        if (conteggioPiatti[nome] > maxVendite) {
+            maxVendite = conteggioPiatti[nome];
             piattoPiuVenduto = nome;
         }
     }
@@ -106,7 +127,7 @@ async function getRestaurantStats(email) {
 }
 
 async function haOrdiniAperti(email, ruolo) {
-    const query = { stato: { $ne: 'consegnato' } }; // Cerca ordini NON completati
+    const query = { stato: { $ne: 'consegnato' } }; // Ordini non completati
     
     if (ruolo === 'ristoratore') {
         query.ristoranteEmail = email;
@@ -114,9 +135,12 @@ async function haOrdiniAperti(email, ruolo) {
         query.clienteEmail = email;
     }
     
-    // findOne è molto veloce: si ferma appena trova anche solo 1 ordine aperto
     const openOrder = await coll().findOne(query);
-    return !!openOrder; // Restituisce true se ha trovato ordini aperti, false altrimenti
+
+    if (openOrder) {
+        return true;
+    }
+    return false;
 }
 
 module.exports = { 

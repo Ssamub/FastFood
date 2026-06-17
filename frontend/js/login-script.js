@@ -15,13 +15,14 @@ function login() {
         email: email,
         password: password
     };
-
+    
     const options = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(user)
     };
 
+    // Chiamata al backend
     fetch('http://localhost:3000/api/user/login', options)
         .then(res => res.json())
         .then(result => checkLogin(result));

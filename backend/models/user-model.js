@@ -1,7 +1,9 @@
 const { getCollection } = require("../db/database.js");
 const { ObjectId } = require('mongodb');
 
-const coll = () => getCollection("users");
+function coll() {
+    return getCollection("users"); // per evitare di dover scrivere getCollection("users") ogni volta
+}
 
 async function getUserById(id) {
     return await coll().findOne({ _id: ObjectId.createFromHexString(id) });

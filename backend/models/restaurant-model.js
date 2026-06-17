@@ -1,7 +1,9 @@
 const { getCollection } = require("../db/database.js");
 const { ObjectId } = require("mongodb");
 
-const coll = () => getCollection("restaurants");
+function coll() {
+    return getCollection("restaurants"); // per evitare di dover scrivere getCollection("restaurants") ogni volta
+}
 
 async function getAllRestaurants() {
     return coll().find({}).toArray();

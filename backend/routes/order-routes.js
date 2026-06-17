@@ -64,7 +64,7 @@ router.put('/order/:id/status', async (req, res) => {
             res.status(404).json({ error: "Ordine non trovato" });
         }
     } catch (err) {
-        res.status(500).json({ error: "Errore aggiornamento" });
+        res.status(500).json({ error: "Errore aggiornamento stato" });
     }
 });
 

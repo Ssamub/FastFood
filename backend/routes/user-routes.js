@@ -51,7 +51,7 @@ router.post('/user/register', async (req, res) => {
         if (err.code === 11000) {
             res.status(409).json({ error: "Email già in uso" });
         } else {
-            res.status(500).json({ error: "Errore del server" });
+            res.status(500).json({ error: "Errore durante la registrazione" });
         }
     }
 });
@@ -88,7 +88,7 @@ router.post('/user/login', async (req, res) => {
             res.status(401).json({ error: "Credenziali Errate" });
         }
     } catch (error) {
-        res.status(500).json({ error: "Errore del server" });
+        res.status(500).json({ error: "Errore durante il login" });
     }
 });
 
@@ -124,7 +124,7 @@ router.put('/user/update/:email', async (req, res) => {
         }
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Errore del server" });
+        res.status(500).json({ error: "Errore durante l'aggiornamento del profilo" });
     }
 });
 
@@ -150,7 +150,7 @@ router.delete('/user/delete/:email', async (req, res) => {
             res.status(404).json({ error: "Utente non trovato" });
         }
     } catch (err) {
-        res.status(500).json({ error: "Errore del server" });
+        res.status(500).json({ error: "Errore eliminazione profilo" });
     }
 });
 
