@@ -77,6 +77,8 @@ function applicaFiltriMenu() {
 
 function mostraMenu(menuArray) {
     var contenitore = document.getElementById('griglia-menu');
+    var emailRistoranteEncoded = encodeURIComponent(datiRistorante.emailRistoratore || "");
+    var nomeRistoranteEncoded = encodeURIComponent(datiRistorante.nomeRistorante || "");
 
     if (menuArray.length === 0) {
         contenitore.innerHTML = '<div class="col-12 text-center text-muted"><p>Nessun piatto corrisponde alla ricerca o il menu è vuoto.</p></div>';
@@ -98,7 +100,7 @@ function mostraMenu(menuArray) {
               </div>
               <div class="card-footer bg-white border-top-0">
                 <button class="btn btn-primary w-100" id="btn-piatto-${i}" 
-                  onclick="aggiungiAlCarrello('${piattoEncoded}', '${datiRistorante.emailRistoratore}', '${datiRistorante.nomeRistorante}', 'btn-piatto-${i}')">
+                  onclick="aggiungiAlCarrello('${piattoEncoded}', '${emailRistoranteEncoded}', '${nomeRistoranteEncoded}', 'btn-piatto-${i}')">
                   Aggiungi al carrello
                 </button>
               </div>
@@ -111,9 +113,11 @@ function mostraMenu(menuArray) {
 
 function aggiungiAlCarrello(piattoEncoded, emailRistorante, nomeRistorante, btnId) {
     var piatto = JSON.parse(decodeURIComponent(piattoEncoded));
+    var emailRistoranteDecodificata = decodeURIComponent(emailRistorante);
+    var nomeRistoranteDecodificato = decodeURIComponent(nomeRistorante);
     var item = {
         id: piatto._id, nome: piatto.nome, prezzo: piatto.prezzo, foto: piatto.foto,
-        ristoranteEmail: emailRistorante, ristoranteNome: nomeRistorante, quantita: 1
+        ristoranteEmail: emailRistoranteDecodificata, ristoranteNome: nomeRistoranteDecodificato, quantita: 1
     };
 
     var indexEsistente = carrello.findIndex(c => c.id === item.id && c.ristoranteEmail === item.ristoranteEmail);
