@@ -1,13 +1,15 @@
+// Recupera i dati dell'utente dal localStorage (salvati al login)
 const user = JSON.parse(localStorage.getItem('user'));
 
-document.addEventListener('DOMContentLoaded', async () => {
-    if (!user) {
+document.addEventListener('DOMContentLoaded', async function() {
+    if (!user) { // Se l'utente non è loggato reindirizzo al login
         window.location.href = "login.html";
         return;
     }
 
-    document.getElementById('displayEmail').textContent = `I miei dati: (${user.email})`;
+    document.getElementById('displayEmail').textContent = user.email; // Mostra "I miei dati: [email]" dell'utente
     
+    // Mostra la sezione corretta e il pulsante "torna indietro" in base al ruolo dell'utente
     if (user.ruolo === 'cliente') {
         document.getElementById('sezione-cliente').classList.remove('d-none');
         document.getElementById('link-indietro').href = "index.html";
@@ -23,7 +25,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         await caricaDatiRistoratore();
     }
 
-    document.getElementById('profileForm').addEventListener('submit', gestisciSalvataggioProfilo);
+    // Collego la funzione di salvataggio al form: quando l'utente clicca viene eseguita la funzione salvaModifiche
+    document.getElementById('profileForm').addEventListener('submit', salvaModifiche);
 });
 
 async function caricaDatiCliente() {
@@ -43,6 +46,7 @@ async function caricaDatiRistoratore() {
     document.getElementById('ristNome').value = user.nome || '';
     document.getElementById('ristCognome').value = user.cognome || '';
 
+    // Chiamata ulteriore per ottenere i dati del ristorante associato alla mail del ristoratore
     try {
         const res = await fetch(`http://localhost:3000/api/restaurant/profile/${user.email}`);
         if (res.ok) {
@@ -57,10 +61,11 @@ async function caricaDatiRistoratore() {
     }
 }
 
-async function gestisciSalvataggioProfilo(e) {
-    e.preventDefault();
+async function salvaModifiche(e) {
+    e.preventDefault(); // Per evitare il refresh della pagina (comportamento default del form)
 
     if (user.ruolo === 'cliente') {
+        // Oggetto con i dati aggiornati del cliente
         const datiAnagrafici = {
             nome: document.getElementById('cliNome').value,
             cognome: document.getElementById('cliCognome').value,
@@ -83,6 +88,7 @@ async function gestisciSalvataggioProfilo(e) {
             });
 
             if (res.ok) {
+                // Aggiorno i dati nel localStorage senza la password
                 const datiPerLocalStorage = { ...user, ...datiAnagrafici };
                 delete datiPerLocalStorage.password;
                 localStorage.setItem('user', JSON.stringify(datiPerLocalStorage));
@@ -94,6 +100,7 @@ async function gestisciSalvataggioProfilo(e) {
         } catch (err) {
             alert("Errore di connessione al server.");
         }
+        
     } else if (user.ruolo === 'ristoratore') {
         const datiAnagrafici = {
             nome: document.getElementById('ristNome').value,

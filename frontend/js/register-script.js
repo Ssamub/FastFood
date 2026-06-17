@@ -1,14 +1,17 @@
-document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('registerForm').addEventListener('submit', (evento) => {
+document.addEventListener('DOMContentLoaded', function() {
+    // Listener per il submit del form per prevenire il comportamento predefinito (refresh della pagina) e chiamare la funzione register
+    document.getElementById('registerForm').addEventListener('submit', function(evento) {
         evento.preventDefault();
         register();
     });
 
-    document.getElementById('regRuoloInput').addEventListener('change', (e) => {
+    // Listener per il cambio di ruolo nel menu a tendina, per mostrare o nascondere i campi specifici per cliente o ristoratore
+    document.getElementById('regRuoloInput').addEventListener('change', function(evento) {
         const sezioneCliente = document.getElementById('sezione-campi-cliente');
         const sezioneRistoratore = document.getElementById('sezione-campi-ristoratore');
         
-        if (e.target.value === 'ristoratore') {
+        // Classe 'd-none' di Bootstrap per nascondere i div non necessari
+        if (evento.target.value === 'ristoratore') {
             sezioneCliente.classList.add('d-none');
             document.getElementById('regUsernameInput').classList.add('d-none');
             sezioneRistoratore.classList.remove('d-none');
@@ -22,34 +25,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function register() {
     const ruolo = document.getElementById('regRuoloInput').value;
-    const nome = document.getElementById('regNomeInput').value;
-    const cognome = document.getElementById('regCognomeInput').value;
     const email = document.getElementById('regEmailInput').value.toLowerCase();
-    const password = document.getElementById('regPasswordInput').value;
 
-    let username = "";
-    let indirizzo = "";
-    let metodoPagamento = "";
-    let preferenze = "";
-
-    if (ruolo === 'cliente') {
-        username = document.getElementById('regUsernameInput').value;
-        indirizzo = document.getElementById('regIndirizzoInput').value;
-        metodoPagamento = document.getElementById('regPagamentoInput').value;
-        preferenze = document.getElementById('regPreferenzeInput').value;
-    }
-
+    // Oggetto con i dati
     const user = {
         ruolo: ruolo,
-        nome: nome,
-        cognome: cognome,
-        username: username,
+        nome: document.getElementById('regNomeInput').value,
+        cognome: document.getElementById('regCognomeInput').value,
         email: email,
-        password: password,
-        indirizzo: indirizzo,
-        metodoPagamento: metodoPagamento,
-        preferenze: preferenze
+        password: document.getElementById('regPasswordInput').value,
+        username: "",
+        indirizzo: "",
+        metodoPagamento: "",
+        preferenze: "",
     };
+
+    if (ruolo === 'cliente') {
+        user.username = document.getElementById('regUsernameInput').value;
+        user.indirizzo = document.getElementById('regIndirizzoInput').value;
+        user.metodoPagamento = document.getElementById('regPagamentoInput').value;
+        user.preferenze = document.getElementById('regPreferenzeInput').value;
+    }
 
     const options = {
         method: 'POST',
@@ -68,33 +64,35 @@ function checkRegister(result, ruolo, email) {
     if (result.error) {
         alert.innerHTML = result.error;
         alert.classList.remove('d-none');
-    } else {
-        localStorage.setItem('user', JSON.stringify(result.user));
+        return; // Interrompo funzione
+    }
+
+    localStorage.setItem('user', JSON.stringify(result.user));
         
-        if (ruolo === 'ristoratore') {
-            const restData = {
-                email: email.toLowerCase(),
-                nomeRistorante: document.getElementById('regNomeRistorante').value,
-                telefono: document.getElementById('regTelefono').value,
-                partitaIva: document.getElementById('regPiva').value,
-                indirizzo: document.getElementById('regSede').value
-            };
+    if (ruolo === 'ristoratore') {
+        const datiRistorante = {
+            email: email, // Email come chiave per associare il ristorante all'utente
+            nomeRistorante: document.getElementById('regNomeRistorante').value,
+            telefono: document.getElementById('regTelefono').value,
+            partitaIva: document.getElementById('regPiva').value,
+            indirizzo: document.getElementById('regSede').value
+        };
 
-            const restOptions = {
-                method: "PUT",
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(restData)
-            };
+        const restOptions = {
+            method: "PUT",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datiRistorante)
+        };
 
-            fetch("http://localhost:3000/api/restaurant/update", restOptions)
-                .then(response => response.json())
-                .then(res => {
-                    alert.classList.add('d-none');
-                    window.location.href = "index.html";
-                });
-        } else {
-            alert.classList.add('d-none');
-            window.location.href = "index.html";
-        }
+        fetch("http://localhost:3000/api/restaurant/update", restOptions)
+            .then(response => response.json())
+            .then(res => {
+                alert.classList.add('d-none');
+                window.location.href = "index.html";
+            });
+    } else {
+        // Per i clienti
+        alert.classList.add('d-none');
+        window.location.href = "index.html";
     }
 }

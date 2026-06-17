@@ -5,14 +5,13 @@ if (!user || user.ruolo !== 'ristoratore') {
     window.location.href = 'index.html';
 }
 
-document.addEventListener('DOMContentLoaded', inizializzaPagina);
-
-async function inizializzaPagina() {
+document.addEventListener('DOMContentLoaded', async function() {
     await caricaDatiRistorante();
     await caricaPiattiComuni();
     await caricaOrdiniRistorante();
     await caricaStatistiche();
-}
+});
+
 
 async function caricaDatiRistorante() {
     try {

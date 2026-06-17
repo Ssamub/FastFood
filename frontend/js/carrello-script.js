@@ -1,25 +1,25 @@
-const utente = JSON.parse(localStorage.getItem('user'));
+const user = JSON.parse(localStorage.getItem('user'));
 let carrello = JSON.parse(localStorage.getItem('carrello')) || [];
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (!utente || utente.ruolo !== 'cliente') {
+document.addEventListener('DOMContentLoaded', function() {
+    // Verifico che l'utente sia loggato e abbia il ruolo di cliente, altrimenti lo reindirizzo alla pagina di login
+    if (!user || user.ruolo !== 'cliente') {
         alert("Devi accedere come cliente per visualizzare il carrello e ordinare.");
         window.location.href = 'login.html';
         return;
     }
 
-    if (utente.indirizzo) document.getElementById('indirizzoConsegna').value = utente.indirizzo;
-
-    if (utente.numeroCarta) document.getElementById('numCarta').value = utente.numeroCarta;
-    if (utente.scadenzaCarta) document.getElementById('scadCarta').value = utente.scadenzaCarta;
-    if (utente.cvvCarta) document.getElementById('cvvCarta').value = utente.cvvCarta;
+    if (user.indirizzo) document.getElementById('indirizzoConsegna').value = user.indirizzo;
+    if (user.numeroCarta) document.getElementById('numCarta').value = user.numeroCarta;
+    if (user.scadenzaCarta) document.getElementById('scadCarta').value = user.scadenzaCarta;
+    if (user.cvvCarta) document.getElementById('cvvCarta').value = user.cvvCarta;
 
     mostraCarrello();
 
-    document.getElementById('modalitaOrdine').addEventListener('change', (e) => {
+    document.getElementById('modalitaOrdine').addEventListener('change', function(evento) {
         const boxIndirizzo = document.getElementById('box-indirizzo');
         const inputIndirizzo = document.getElementById('indirizzoConsegna');
-        if (e.target.value === 'domicilio') {
+        if (evento.target.value === 'domicilio') {
             boxIndirizzo.classList.remove('d-none');
             inputIndirizzo.setAttribute('required', '');
         } else {
@@ -33,20 +33,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function mostraCarrello() {
     const contenitore = document.getElementById('lista-carrello');
+
     if (carrello.length === 0) {
         contenitore.innerHTML = '<div class="alert alert-info">Il carrello è vuoto.</div>';
-        document.getElementById('btnConferma').disabled = true;
         document.getElementById('totale-carrello').textContent = '€0.00';
         return;
     }
 
-    let html = '';
+    let htmlCompleto = '';
     let totale = 0;
 
-    carrello.forEach((item, index) => {
+    // Index per tenere traccia della posizione dell'elemento nel carrello, utile per bottone rimozione, item = elemento
+    for (const [index, item] of carrello.entries()) {
         const subTot = item.prezzo * item.quantita;
         totale += subTot;
-        html += `
+
+        htmlCompleto += `
             <div class="card mb-2 shadow-sm">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div class="d-flex align-items-center">
@@ -65,11 +67,10 @@ function mostraCarrello() {
                 </div>
             </div>
         `;
-    });
+    }
 
-    contenitore.innerHTML = html;
-    document.getElementById('totale-carrello').textContent = `€${totale.toFixed(2)}`;
-    document.getElementById('btnConferma').disabled = false;
+    contenitore.innerHTML = htmlCompleto;
+    document.getElementById('totale-carrello').textContent = `€${totale.toFixed(2)}`; // Approssimo a 2 decimali
 }
 
 function cambiaQuantita(index, nuovaQuantita) {
@@ -91,33 +92,33 @@ function rimuoviDaCarrello(index) {
 
 
 async function inviaOrdine(e) {
-    e.preventDefault();
-
+    e.preventDefault(); // Prevengo il comportamento di default del form (refresh della pagina) dopo il submit dell'ordine
     if (carrello.length === 0) return;
 
     const modalita = document.getElementById('modalitaOrdine').value;
     const luogoConsegna = document.getElementById('indirizzoConsegna').value;
     const msgBox = document.getElementById('msgCheckout');
 
-    // Prelevo i dati della carta scritti nel form
+    // Dati della carta scritti nel form
     const numCarta = document.getElementById('numCarta').value;
     const scadCarta = document.getElementById('scadCarta').value;
     const cvvCarta = document.getElementById('cvvCarta').value;
 
     const ordiniPerRistorante = {};
-    carrello.forEach(item => {
+
+    for (const item of carrello) {
         if (!ordiniPerRistorante[item.ristoranteEmail]) {
             ordiniPerRistorante[item.ristoranteEmail] = { piatti: [], totale: 0 };
         }
         ordiniPerRistorante[item.ristoranteEmail].piatti.push(item);
         ordiniPerRistorante[item.ristoranteEmail].totale += (item.prezzo * item.quantita);
-    });
+    }
 
     try {
-        // 1. Invio degli ordini al backend
+        // Ciclo sui ristoranti per inviare un ordine separato per ciascuno di essi (se ci sono piatti di più ristoranti nel carrello)
         for (const [ristoranteEmail, dati] of Object.entries(ordiniPerRistorante)) {
             const payload = {
-                clienteEmail: utente.email,
+                clienteEmail: user.email,
                 ristoranteEmail: ristoranteEmail,
                 piatti: dati.piatti,
                 totale: dati.totale,
@@ -137,29 +138,29 @@ async function inviaOrdine(e) {
             }
         }
 
-        // 2. Se l'ordine è andato bene, salvo la carta (se non è già salvata o se è stata modificata)
-        if (utente.numeroCarta !== numCarta || utente.scadenzaCarta !== scadCarta || utente.cvvCarta !== cvvCarta) {
+        // Se l'ordine è andato bene, salvo la carta (se non è già salvata o se è stata modificata)
+        if (user.numeroCarta !== numCarta || user.scadenzaCarta !== scadCarta || user.cvvCarta !== cvvCarta) {
             await fetch('http://localhost:3000/api/user/update', {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    email: utente.email,
-                    nome: utente.nome,
-                    cognome: utente.cognome,
+                    email: user.email,
+                    nome: user.nome,
+                    cognome: user.cognome,
                     numeroCarta: numCarta,
                     scadenzaCarta: scadCarta,
                     cvvCarta: cvvCarta
                 })
             });
             
-            // Aggiorno il localStorage così non dovrà ricaricare la pagina per avere i dati aggiornati
-            utente.numeroCarta = numCarta;
-            utente.scadenzaCarta = scadCarta;
-            utente.cvvCarta = cvvCarta;
-            localStorage.setItem('user', JSON.stringify(utente));
+            // Aggiorno il localStorage
+            user.numeroCarta = numCarta;
+            user.scadenzaCarta = scadCarta;
+            user.cvvCarta = cvvCarta;
+            localStorage.setItem('user', JSON.stringify(user));
         }
 
-        // 3. Pulisco il carrello e chiudo
+        // Pulisco il carrello alla fine
         localStorage.removeItem('carrello');
         carrello = [];
         
@@ -168,7 +169,7 @@ async function inviaOrdine(e) {
         msgBox.classList.remove('d-none');
         
         setTimeout(() => {
-            window.location.href = 'profiloCliente.html'; // Ho aggiornato questo link al nuovo profilo!
+            window.location.href = 'ordini.html'; // Reindirizza alla pagina degli ordini dopo 2 secondi dopo la conferma dell'ordine
         }, 2000);
 
     } catch (err) {

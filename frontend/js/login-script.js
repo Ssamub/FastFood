@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('loginForm').addEventListener('submit', (evento) => {
+    document.getElementById('loginForm').addEventListener('submit', function(evento) {
         evento.preventDefault();
         login();
     });
@@ -32,9 +32,11 @@ function checkLogin(result) {
     const alert = document.getElementById('messaggioErrore');
     
     if (result.error) {
+        // Credenziali errate, mostra il messaggio di errore
         alert.innerHTML = result.error;
         alert.classList.remove('d-none');
     } else {
+        // Credenziali corrette, salva i dati dell'utente nel localStorage (per averli pronti nel profilo) e reindirizza alla pagina principale
         localStorage.setItem('user', JSON.stringify(result.user));
         alert.classList.add('d-none');
         window.location.href = "index.html";

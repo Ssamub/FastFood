@@ -1,6 +1,6 @@
 const user = JSON.parse(localStorage.getItem('user'));
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     if (!user || user.ruolo !== 'cliente') {
         window.location.href = "login.html";
         return;
