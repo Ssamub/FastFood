@@ -58,6 +58,8 @@ function register() {
         .then(result => checkRegister(result, ruolo, email));
 }
 
+
+// Gestisco risposta backend con alert o reindirizzamento a pagine
 function checkRegister(result, ruolo, email) {
     const alert = document.getElementById('regMessaggio');
     

@@ -1,3 +1,6 @@
+// Non so se serva inizializzare il database con i pasti, se passo direttamente tutte le mie collection di MongoDB già create
+// ma lo faccio comunque per sicurezza
+
 const fs = require('fs');
 const path = require('path');
 const { getCollection } = require('./database.js');

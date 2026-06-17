@@ -27,12 +27,12 @@ function caricaRistoranti() {
 }
 
 function applicaFiltriRicerca() {
-    var testoCercato = document.getElementById('cerca-input').value.toLowerCase();
-    var filtrati = [];
+    const testoCercato = document.getElementById('cerca-input').value.toLowerCase();
+    const filtrati = [];
 
     for (const r of tuttiIRistoranti) {
-        var nome = (r.nomeRistorante || "").toLowerCase();
-        var luogo = (r.indirizzo || "").toLowerCase();
+        const nome = (r.nomeRistorante || "").toLowerCase();
+        const luogo = (r.indirizzo || "").toLowerCase();
         if (nome.includes(testoCercato) || luogo.includes(testoCercato)) {
             filtrati.push(r);
         }
@@ -42,7 +42,7 @@ function applicaFiltriRicerca() {
 }
 
 function mostraRistoranti(arrayRistoranti) {
-    var contenitore = document.getElementById('griglia-principale');
+    const contenitore = document.getElementById('griglia-principale');
 
     if (arrayRistoranti.length === 0) {
         contenitore.innerHTML = '<div class="col-12 text-center"><p>Nessun ristorante trovato...</p></div>';
@@ -52,6 +52,7 @@ function mostraRistoranti(arrayRistoranti) {
     let htmlCompleto = '';
 
     for (const r of arrayRistoranti) {
+        // Una card HTML per ogni singolo ristorante con informazioni e bottone per vedere il menu
         htmlCompleto += `
             <div class="col-md-3 mb-4"> <div class="card h-100 shadow-sm">
                     <div class="card-body">
@@ -103,18 +104,18 @@ function logout() {
 }
 
 function mostraConsigliati() {
-    var user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('user'));
     if (!user || !user.preferenze) return;
 
-    var pref = (user.preferenze || "").toLowerCase().trim();
-    var piattiConsigliati = [];
+    const pref = (user.preferenze || "").toLowerCase().trim();
+    const piattiConsigliati = [];
 
     // Cerchiamo i piatti che matchano le preferenze
     tuttiIRistoranti.forEach(r => {
         if (r.menu) {
             r.menu.forEach(p => {
-                var tipo = p.tipologia ? p.tipologia.toLowerCase() : "";
-                var nome = p.nome ? p.nome.toLowerCase() : "";
+                const tipo = p.tipologia ? p.tipologia.toLowerCase() : "";
+                const nome = p.nome ? p.nome.toLowerCase() : "";
                 if (tipo.includes(pref) || nome.includes(pref)) {
                     piattiConsigliati.push({ ...p, restEmail: r.emailRistoratore, restNome: r.nomeRistorante });
                 }
@@ -122,8 +123,8 @@ function mostraConsigliati() {
         }
     });
 
-    var containerId = 'sezione-consigliati';
-    var container = document.getElementById(containerId);
+    const containerId = 'sezione-consigliati';
+    const container = document.getElementById(containerId);
     if (piattiConsigliati.length === 0) {
         if (container) container.remove();
         return;
@@ -136,10 +137,11 @@ function mostraConsigliati() {
         document.getElementById('area-consigliati').appendChild(container);
     }
 
-    var htmlCompleto = `<h6 class="mb-3 text-dark fw-bold">🌟 Scelti per te (${user.preferenze})</h6><div class="row mx-0">`;
-    var scelti = piattiConsigliati.slice(0, 3); // Mostro al massimo 3 consigli
+    let htmlCompleto = `<h6 class="mb-3 text-dark fw-bold">Scelti per le tue preferenze: (${user.preferenze})</h6><div class="row mx-0">`;
+    const scelti = piattiConsigliati.slice(0, 3); // Mostro al massimo 3 consigli
     
     for (const p of scelti) {
+        // Una card HTML per ogni singolo piatto consigliato in un bottone per vedere il menu del ristorante
         htmlCompleto += `
             <div class="col-md-4 mb-2">
                 <div class="card shadow-sm border-warning h-100 hover-shadow" style="cursor: pointer; transition: 0.2s;" onclick="selezionaRistorante('${p.restEmail}')">

@@ -58,7 +58,7 @@ function gestisciInterfacciaAuth() {
 
 
 function mostraMenu(menuArray) {
-    var contenitore = document.getElementById('griglia-menu');
+    const contenitore = document.getElementById('griglia-menu');
 
     if (menuArray.length === 0) {
         contenitore.innerHTML = '<div class="col-12 text-center text-muted"><p>Nessun piatto corrisponde alla ricerca o il menu è vuoto.</p></div>';
@@ -72,6 +72,7 @@ function mostraMenu(menuArray) {
         const piattoEncoded = encodeURIComponent(JSON.stringify(piatto));
         const ingredientiUniti = piatto.ingredienti ? piatto.ingredienti.join(', ') : "";
 
+        // Una card HTML per ogni singolo piatto con informazioni e bottone per aggiungere al carrello
         htmlCompleto += `
             <div class="col-md-3 mb-4"> <div class="card h-100 shadow-sm">
                 <img src="${piatto.foto}" class="card-img-top" alt="${piatto.nome}" style="height: 200px; object-fit: cover;">
@@ -99,9 +100,9 @@ function mostraMenu(menuArray) {
 
 
 function aggiungiAlCarrello(piattoEncoded, emailRistorante, nomeRistorante, btnId) {
-    var piatto = JSON.parse(decodeURIComponent(piattoEncoded));
+    const piatto = JSON.parse(decodeURIComponent(piattoEncoded));
 
-    var item = {
+    const item = {
         id: piatto._id, 
         nome: piatto.nome, 
         prezzo: piatto.prezzo, 
@@ -111,7 +112,7 @@ function aggiungiAlCarrello(piattoEncoded, emailRistorante, nomeRistorante, btnI
         quantita: 1
     };
 
-    var indexEsistente = carrello.findIndex(c => c.id === item.id && c.ristoranteEmail === item.ristoranteEmail);
+    const indexEsistente = carrello.findIndex(c => c.id === item.id && c.ristoranteEmail === item.ristoranteEmail);
     if (indexEsistente >= 0) {
         carrello[indexEsistente].quantita += 1; // Incremento la quantità
     } else {
@@ -122,8 +123,8 @@ function aggiungiAlCarrello(piattoEncoded, emailRistorante, nomeRistorante, btnI
     localStorage.setItem('carrello', JSON.stringify(carrello));
 
     // Modifico temporaneamente il bottone per dare feedback all'utente che l'azione è avvenuta con successo
-    var btn = document.getElementById(btnId);
-    var testoOriginale = btn.innerHTML;
+    const btn = document.getElementById(btnId);
+    const testoOriginale = btn.innerHTML;
     btn.innerHTML = "Aggiunto!";
     btn.classList.replace('btn-primary', 'btn-success');
     setTimeout(() => {
@@ -133,8 +134,8 @@ function aggiungiAlCarrello(piattoEncoded, emailRistorante, nomeRistorante, btnI
 }
 
 function applicaFiltriMenu() {
-    var testoCercato = document.getElementById('cerca-piatto').value.toLowerCase();
-    var prezzoMax = parseFloat(document.getElementById('cerca-prezzo').value);
+    const testoCercato = document.getElementById('cerca-piatto').value.toLowerCase();
+    const prezzoMax = parseFloat(document.getElementById('cerca-prezzo').value);
 
     const menu = datiRistorante.menu || [];
     const filtrati = [];
@@ -143,8 +144,8 @@ function applicaFiltriMenu() {
         const nomePiatto = (p.nome || "").toLowerCase();
         const tipoPiatto = (p.tipologia || "").toLowerCase();
         
-        var matchTesto = nomePiatto.includes(testoCercato) || tipoPiatto.includes(testoCercato);
-        var matchPrezzo = isNaN(prezzoMax) ? true : p.prezzo <= prezzoMax; // Se prezzoMax non è un numero valido, ignoro il filtro prezzo
+        const matchTesto = nomePiatto.includes(testoCercato) || tipoPiatto.includes(testoCercato);
+        const matchPrezzo = isNaN(prezzoMax) ? true : p.prezzo <= prezzoMax; // Se prezzoMax non è un numero valido, ignoro il filtro prezzo
 
         if (matchTesto && matchPrezzo) {
             filtrati.push(p);

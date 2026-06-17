@@ -48,6 +48,7 @@ function mostraCarrello() {
         const subTot = item.prezzo * item.quantita;
         totale += subTot;
 
+        // Una card per ogni piatto nel carrello, con info, quantità e bottone per rimuovere
         htmlCompleto += `
             <div class="card mb-2 shadow-sm">
                 <div class="card-body d-flex justify-content-between align-items-center">

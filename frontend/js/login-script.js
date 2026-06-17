@@ -1,6 +1,6 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('loginForm').addEventListener('submit', function(evento) {
-        evento.preventDefault();
+        evento.preventDefault(); // Impedisce il comportamento predefinito del form (invio della richiesta e ricaricamento della pagina)
         login();
     });
 });
@@ -28,6 +28,8 @@ function login() {
         .then(result => checkLogin(result));
 }
 
+
+// Gestisco risposta backend con alert o reindirizzamento a pagine
 function checkLogin(result) {
     const alert = document.getElementById('messaggioErrore');
     
